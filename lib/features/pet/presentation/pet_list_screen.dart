@@ -1,13 +1,16 @@
 import 'dart:convert' show base64Decode;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:pet_health_log/features/pet/presentation/pet_form_screen.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../models/pet.dart';
 import '../../../shared/providers/pet_provider.dart';
 import '../../../shared/widgets/bottom_navigation.dart';
-import 'pet_form_screen.dart';
 
 class PetListScreen extends ConsumerWidget {
   const PetListScreen({super.key});
@@ -19,6 +22,14 @@ class PetListScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.myPets),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              context.go('/pets/form');
+            },
+          ),
+        ],
       ),
       body: petsAsync.when(
         data: (pets) {
@@ -45,17 +56,6 @@ class PetListScreen extends ConsumerWidget {
         ),
       ),
       bottomNavigationBar: const BottomNavigation(currentIndex: 4), // 設定タブ
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const PetFormScreen(),
-            ),
-          );
-        },
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
     );
   }
 
@@ -92,18 +92,15 @@ class PetListScreen extends ConsumerWidget {
             const SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => const PetFormScreen(),
-                  ),
-                );
+                context.go('/pets/form');
               },
               icon: const Icon(Icons.add),
               label: const Text(AppStrings.addPet),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
             ),
           ],
@@ -136,11 +133,7 @@ class _PetCard extends ConsumerWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => PetFormScreen(pet: pet),
-            ),
-          );
+          context.go('/pets/form', extra: pet);
         },
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -166,7 +159,7 @@ class _PetCard extends ConsumerWidget {
                     : null,
               ),
               const SizedBox(width: 16),
-              
+
               // ペット情報
               Expanded(
                 child: Column(
@@ -199,7 +192,7 @@ class _PetCard extends ConsumerWidget {
                   ],
                 ),
               ),
-              
+
               // アクションメニュー
               PopupMenuButton<String>(
                 onSelected: (value) async {
@@ -233,7 +226,8 @@ class _PetCard extends ConsumerWidget {
                       children: [
                         Icon(Icons.delete, color: AppColors.error),
                         SizedBox(width: 8),
-                        Text(AppStrings.delete, style: TextStyle(color: AppColors.error)),
+                        Text(AppStrings.delete,
+                            style: TextStyle(color: AppColors.error)),
                       ],
                     ),
                   ),
@@ -270,11 +264,11 @@ class _PetCard extends ConsumerWidget {
                 );
               }
             },
-            child: const Text(AppStrings.delete, style: TextStyle(color: AppColors.error)),
+            child: const Text(AppStrings.delete,
+                style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
     );
   }
-
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
-import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../models/daily_record.dart';
@@ -94,12 +93,6 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
             Tab(icon: Icon(Icons.favorite), text: '体調'),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: _saveRecord,
-          ),
-        ],
       ),
       body: selectedPet == null
           ? const Center(
@@ -656,39 +649,4 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
     }
   }
 
-  void _saveRecord() {
-    final selectedPet = ref.read(selectedPetProvider);
-    if (selectedPet == null) return;
-
-    // TODO: 記録をHiveに保存
-    // final healthStatus = HealthStatus(
-    //   temperature: double.tryParse(_temperatureController.text),
-    //   weight: double.tryParse(_weightController.text),
-    //   activityLevel: _activityLevel,
-    //   symptoms: _selectedSymptoms,
-    //   notes: _healthNotesController.text.isEmpty ? null : _healthNotesController.text,
-    // );
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('記録を保存しました'),
-        backgroundColor: AppColors.success,
-      ),
-    );
-
-    // フォームをリセット
-    _resetForm();
-  }
-
-  void _resetForm() {
-    setState(() {
-      _meals.clear();
-      _medications.clear();
-      _excretions.clear();
-      _selectedSymptoms.clear();
-      _temperatureController.clear();
-      _weightController.clear();
-      _healthNotesController.clear();
-      _activityLevel = 3;
-    });
-  }
 }

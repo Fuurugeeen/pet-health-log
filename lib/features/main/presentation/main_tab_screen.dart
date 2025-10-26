@@ -4,23 +4,10 @@ import 'package:go_router/go_router.dart';
 import '../../home/presentation/dashboard_screen.dart';
 import '../../record/presentation/record_form_screen.dart';
 import '../../calendar/presentation/calendar_screen.dart';
+import '../../report/presentation/report_screen.dart';
 import '../../../shared/providers/auth_provider.dart';
 import '../../../shared/widgets/bottom_navigation.dart';
 
-// レポート画面（仮実装）
-class ReportTabContent extends StatelessWidget {
-  const ReportTabContent({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('レポート')),
-      body: const Center(
-        child: Text('レポート画面（Phase 10で実装予定）'),
-      ),
-    );
-  }
-}
 
 // 設定画面
 class SettingsTabContent extends ConsumerWidget {
@@ -99,12 +86,12 @@ class _MainTabScreenState extends State<MainTabScreen> {
             _currentIndex = index;
           });
         },
-        children: const [
-          DashboardScreen(showBottomNav: false), // ボトムナビを表示しない
-          RecordFormScreen(showBottomNav: false), // ボトムナビを表示しない
-          CalendarScreen(),
-          ReportTabContent(),
-          SettingsTabContent(),
+        children: [
+          DashboardScreen(showBottomNav: false, onTabChanged: _onTabTapped), // ボトムナビを表示しない
+          const RecordFormScreen(showBottomNav: false), // ボトムナビを表示しない
+          const CalendarScreen(),
+          const ReportScreen(),
+          const SettingsTabContent(),
         ],
       ),
       bottomNavigationBar: TabBottomNavigation(
