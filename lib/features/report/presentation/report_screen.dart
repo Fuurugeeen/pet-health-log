@@ -495,6 +495,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen>
 
   Widget _buildStatCard(String title, String value, IconData icon, Color color) {
     return Card(
+      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Row(
@@ -502,7 +503,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.1),
+                color: color.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(icon, color: color, size: 24),
@@ -517,6 +518,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen>
                     style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 4),
