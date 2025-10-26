@@ -328,10 +328,15 @@ class DashboardScreen extends ConsumerWidget {
   Widget _buildRecentRecordsWidget(BuildContext context, WidgetRef ref, pet) {
     final now = DateTime.now();
     final sevenDaysAgo = now.subtract(const Duration(days: 7));
+    
+    // 日付の時間部分を削除して正規化
+    final startDate = DateTime(sevenDaysAgo.year, sevenDaysAgo.month, sevenDaysAgo.day);
+    final endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    
     final recordsAsync = ref.watch(recordsByDateRangeProvider((
       petId: pet.id,
-      start: sevenDaysAgo,
-      end: now,
+      start: startDate,
+      end: endDate,
     )));
 
     return recordsAsync.when(
