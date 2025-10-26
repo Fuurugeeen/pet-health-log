@@ -1,5 +1,4 @@
 import 'dart:convert' show base64Decode;
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
@@ -20,18 +19,6 @@ class PetListScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.myPets),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const PetFormScreen(),
-                ),
-              );
-            },
-          ),
-        ],
       ),
       body: petsAsync.when(
         data: (pets) {

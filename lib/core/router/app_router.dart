@@ -4,11 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/pet/presentation/pet_list_screen.dart';
-import '../../features/record/presentation/record_form_screen.dart';
-import '../../features/home/presentation/dashboard_screen.dart';
 import '../../features/main/presentation/main_tab_screen.dart';
 import '../../shared/providers/auth_provider.dart';
-import '../../shared/widgets/bottom_navigation.dart';
 
 // メインタブ画面
 class HomeScreen extends StatelessWidget {
