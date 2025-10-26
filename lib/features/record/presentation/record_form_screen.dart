@@ -680,6 +680,23 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
 
   void _addMeal() {
     if (_foodTypeController.text.isEmpty || _foodAmountController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('食事内容と食事量を入力してください'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final amount = double.tryParse(_foodAmountController.text);
+    if (amount == null || amount <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('食事量は正の数値を入力してください'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
@@ -687,7 +704,7 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
       id: const Uuid().v4(),
       time: DateTime.now(),
       foodType: _foodTypeController.text,
-      amount: double.tryParse(_foodAmountController.text) ?? 0,
+      amount: amount,
       appetiteLevel: _appetiteLevel,
       notes: _mealNotesController.text.isEmpty ? null : _mealNotesController.text,
     );
@@ -699,6 +716,13 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
       _mealNotesController.clear();
       _appetiteLevel = 3;
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('食事記録を追加しました'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   void _removeMeal(int index) {
@@ -709,6 +733,33 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
 
   void _addMedication() {
     if (_medicationNameController.text.isEmpty || _dosageController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('薬名と投薬量を入力してください'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    final dosage = double.tryParse(_dosageController.text);
+    if (dosage == null || dosage <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('投薬量は正の数値を入力してください'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    if (_administrationController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('投薬方法を入力してください'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
 
@@ -716,7 +767,7 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
       id: const Uuid().v4(),
       medicationName: _medicationNameController.text,
       time: DateTime.now(),
-      dosage: double.tryParse(_dosageController.text) ?? 0,
+      dosage: dosage,
       administrationMethod: _administrationController.text,
       hasSideEffects: _hasSideEffects,
       sideEffectDetails: _hasSideEffects ? _sideEffectController.text : null,
@@ -730,6 +781,13 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
       _sideEffectController.clear();
       _hasSideEffects = false;
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('投薬記録を追加しました'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   void _removeMedication(int index) {
@@ -739,6 +797,17 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   }
 
   void _addExcretion() {
+    // 便の場合は便の状態が必須
+    if (_excretionType == ExcretionType.stool && _stoolCondition == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('便の状態を選択してください'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     final excretion = ExcretionRecord(
       id: const Uuid().v4(),
       time: DateTime.now(),
@@ -753,6 +822,13 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
       _excretionNotesController.clear();
       _hasAbnormality = false;
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('排泄記録を追加しました'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   void _removeExcretion(int index) {
@@ -762,6 +838,21 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   }
 
   void _addWalk() {
+    // 距離が入力されている場合の数値チェック
+    double? distance;
+    if (_distanceController.text.isNotEmpty) {
+      distance = double.tryParse(_distanceController.text);
+      if (distance == null || distance <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('距離は正の数値を入力してください'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+    }
+
     final now = DateTime.now();
     final duration = 30; // デフォルト30分
     
@@ -770,7 +861,7 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
       startTime: now.subtract(Duration(minutes: duration)),
       endTime: now,
       duration: duration,
-      distance: double.tryParse(_distanceController.text),
+      distance: distance,
       route: _routeController.text.isEmpty ? null : _routeController.text,
       activityLevel: _walkActivityLevel,
       notes: _walkNotesController.text.isEmpty ? null : _walkNotesController.text,
@@ -783,6 +874,13 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
       _walkNotesController.clear();
       _walkActivityLevel = 3;
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('散歩記録を追加しました'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   void _removeWalk(int index) {
@@ -792,6 +890,48 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   }
 
   void _addHealthRecord() {
+    // 体温が入力されている場合の数値チェック
+    if (_temperatureController.text.isNotEmpty) {
+      final temperature = double.tryParse(_temperatureController.text);
+      if (temperature == null || temperature < 30 || temperature > 45) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('体温は30-45℃の範囲で入力してください'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+    }
+
+    // 体重が入力されている場合の数値チェック
+    if (_weightController.text.isNotEmpty) {
+      final weight = double.tryParse(_weightController.text);
+      if (weight == null || weight <= 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('体重は正の数値を入力してください'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+    }
+
+    // 何かしらの入力があるかチェック
+    if (_temperatureController.text.isEmpty &&
+        _weightController.text.isEmpty &&
+        _selectedSymptoms.isEmpty &&
+        _healthNotesController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('体調情報を1つ以上入力してください'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     // 体調記録をローカルに保持
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
