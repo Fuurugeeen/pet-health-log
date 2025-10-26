@@ -5,6 +5,7 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../models/daily_record.dart';
 import '../../../shared/providers/pet_provider.dart';
+import '../../../shared/providers/daily_record_provider.dart';
 import '../../../shared/widgets/bottom_navigation.dart';
 
 class RecordFormScreen extends ConsumerStatefulWidget {
@@ -58,6 +59,8 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   int _activityLevel = 3;
   final List<Symptom> _selectedSymptoms = [];
   final _healthNotesController = TextEditingController();
+
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -235,26 +238,22 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
               '今日の食事記録',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _meals.length,
-                itemBuilder: (context, index) {
-                  final meal = _meals[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(meal.foodType),
-                      subtitle: Text(
-                        '${AppDateUtils.formatTime(meal.time)} • ${meal.amount}g • 食欲レベル: ${meal.appetiteLevel}',
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => _removeMeal(index),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+            const SizedBox(height: 8),
+            ...List.generate(_meals.length, (index) {
+              final meal = _meals[index];
+              return Card(
+                child: ListTile(
+                  title: Text(meal.foodType),
+                  subtitle: Text(
+                    '${AppDateUtils.formatTime(meal.time)} • ${meal.amount}g • 食欲レベル: ${meal.appetiteLevel}',
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => _removeMeal(index),
+                  ),
+                ),
+              );
+            }),
           ],
         ],
         ),
@@ -345,26 +344,22 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
               '今日の投薬記録',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _medications.length,
-                itemBuilder: (context, index) {
-                  final medication = _medications[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(medication.medicationName),
-                      subtitle: Text(
-                        '${AppDateUtils.formatTime(medication.time)} • ${medication.dosage} • ${medication.administrationMethod}',
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => _removeMedication(index),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+            const SizedBox(height: 8),
+            ...List.generate(_medications.length, (index) {
+              final medication = _medications[index];
+              return Card(
+                child: ListTile(
+                  title: Text(medication.medicationName),
+                  subtitle: Text(
+                    '${AppDateUtils.formatTime(medication.time)} • ${medication.dosage} • ${medication.administrationMethod}',
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => _removeMedication(index),
+                  ),
+                ),
+              );
+            }),
           ],
         ],
         ),
@@ -469,26 +464,22 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
               '今日の排泄記録',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _excretions.length,
-                itemBuilder: (context, index) {
-                  final excretion = _excretions[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(excretion.type.displayName),
-                      subtitle: Text(
-                        '${AppDateUtils.formatTime(excretion.time)} • ${excretion.condition?.displayName ?? ""}',
-                      ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () => _removeExcretion(index),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+            const SizedBox(height: 8),
+            ...List.generate(_excretions.length, (index) {
+              final excretion = _excretions[index];
+              return Card(
+                child: ListTile(
+                  title: Text(excretion.type.displayName),
+                  subtitle: Text(
+                    '${AppDateUtils.formatTime(excretion.time)} • ${excretion.condition?.displayName ?? ""}',
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: () => _removeExcretion(index),
+                  ),
+                ),
+              );
+            }),
           ],
         ],
         ),
@@ -573,26 +564,22 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
                 '今日の散歩記録',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _walks.length,
-                  itemBuilder: (context, index) {
-                    final walk = _walks[index];
-                    return Card(
-                      child: ListTile(
-                        title: Text(walk.route ?? '散歩'),
-                        subtitle: Text(
-                          '${AppDateUtils.formatTime(walk.startTime)} • ${walk.duration}分${walk.distance != null ? ' • ${walk.distance}km' : ''}',
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () => _removeWalk(index),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+              const SizedBox(height: 8),
+              ...List.generate(_walks.length, (index) {
+                final walk = _walks[index];
+                return Card(
+                  child: ListTile(
+                    title: Text(walk.route ?? '散歩'),
+                    subtitle: Text(
+                      '${AppDateUtils.formatTime(walk.startTime)} • ${walk.duration}分${walk.distance != null ? ' • ${walk.distance}km' : ''}',
+                    ),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete),
+                      onPressed: () => _removeWalk(index),
+                    ),
+                  ),
+                );
+              }),
             ],
           ],
         ),
@@ -675,16 +662,39 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
                   maxLines: 3,
                 ),
                 const SizedBox(height: 16),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _addHealthRecord,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _addHealthRecord,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: const Text('体調記録を追加'),
+                      ),
                     ),
-                    child: const Text('体調記録を追加'),
-                  ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _isSaving ? null : _saveAllRecords,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: _isSaving
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              )
+                            : const Text('全記録を保存'),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -808,13 +818,145 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   }
 
   void _addHealthRecord() {
-    // 体調記録を保存する
+    // 体調記録をローカルに保持
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('体調記録を追加しました'),
-        backgroundColor: Colors.green,
+        content: Text('体調記録を追加しました（未保存）'),
+        backgroundColor: Colors.orange,
       ),
     );
+  }
+
+  Future<void> _saveAllRecords() async {
+    final selectedPet = ref.read(selectedPetProvider);
+    if (selectedPet == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('ペットが選択されていません'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSaving = true;
+    });
+
+    try {
+      final notifier = ref.read(dailyRecordNotifierProvider.notifier);
+
+      // 体調記録の作成
+      HealthRecord? healthRecord;
+      if (_temperatureController.text.isNotEmpty ||
+          _weightController.text.isNotEmpty ||
+          _selectedSymptoms.isNotEmpty ||
+          _healthNotesController.text.isNotEmpty) {
+        healthRecord = HealthRecord(
+          id: const Uuid().v4(),
+          time: DateTime.now(),
+          temperature: double.tryParse(_temperatureController.text),
+          weight: double.tryParse(_weightController.text),
+          activityLevel: _activityLevel,
+          symptoms: _selectedSymptoms,
+          notes: _healthNotesController.text.isEmpty ? null : _healthNotesController.text,
+        );
+      }
+
+      // 既存の記録があるかチェック
+      final existingRecord = await notifier.getRecordByDateAndPet(
+        _selectedDate,
+        selectedPet.id,
+      );
+
+      if (existingRecord != null) {
+        // 既存の記録を更新
+        final updatedRecord = DailyRecord(
+          id: existingRecord.id,
+          petId: existingRecord.petId,
+          date: existingRecord.date,
+          meals: [...existingRecord.meals, ..._meals],
+          medications: [...existingRecord.medications, ..._medications],
+          excretions: [...existingRecord.excretions, ..._excretions],
+          walks: [...existingRecord.walks, ..._walks],
+          healthRecord: healthRecord ?? existingRecord.healthRecord,
+          notes: existingRecord.notes,
+        );
+        await notifier.updateRecord(updatedRecord);
+      } else {
+        // 新しい記録を作成
+        final newRecord = DailyRecord(
+          id: const Uuid().v4(),
+          petId: selectedPet.id,
+          date: _selectedDate,
+          meals: _meals,
+          medications: _medications,
+          excretions: _excretions,
+          walks: _walks,
+          healthRecord: healthRecord,
+          notes: null,
+        );
+        await notifier.createRecord(newRecord);
+      }
+
+      // 成功時のフィードバック
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('記録を保存しました'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // フォームをクリア
+      _clearAllForms();
+
+    } catch (error) {
+      // エラー時のフィードバック
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('保存に失敗しました: $error'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        _isSaving = false;
+      });
+    }
+  }
+
+  void _clearAllForms() {
+    setState(() {
+      // 各タブのフォームをクリア
+      _foodTypeController.clear();
+      _foodAmountController.clear();
+      _mealNotesController.clear();
+      _appetiteLevel = 3;
+      _meals.clear();
+
+      _medicationNameController.clear();
+      _dosageController.clear();
+      _administrationController.clear();
+      _sideEffectController.clear();
+      _hasSideEffects = false;
+      _medications.clear();
+
+      _excretionNotesController.clear();
+      _hasAbnormality = false;
+      _excretions.clear();
+
+      _routeController.clear();
+      _distanceController.clear();
+      _walkNotesController.clear();
+      _walkActivityLevel = 3;
+      _walks.clear();
+
+      _temperatureController.clear();
+      _weightController.clear();
+      _healthNotesController.clear();
+      _activityLevel = 3;
+      _selectedSymptoms.clear();
+    });
   }
 
   Future<void> _selectDate() async {
