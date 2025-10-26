@@ -19,7 +19,7 @@ final recordByDateProvider = FutureProvider.family<DailyRecord?, ({String petId,
 });
 
 // 期間内の記録
-final recordsByDateRangeProvider = FutureProvider.autoDispose.family<List<DailyRecord>, ({String petId, DateTime start, DateTime end})>((ref, params) async {
+final recordsByDateRangeProvider = FutureProvider.family<List<DailyRecord>, ({String petId, DateTime start, DateTime end})>((ref, params) async {
   final repository = ref.read(dailyRecordRepositoryProvider);
   return await repository.getRecordsByDateRange(params.petId, params.start, params.end);
 });
