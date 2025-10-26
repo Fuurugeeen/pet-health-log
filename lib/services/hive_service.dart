@@ -24,6 +24,7 @@ class HiveService {
     _registerAdapterSafely(() => Hive.registerAdapter(MealRecordAdapter()));
     _registerAdapterSafely(() => Hive.registerAdapter(MedicationRecordAdapter()));
     _registerAdapterSafely(() => Hive.registerAdapter(ExcretionRecordAdapter()));
+    _registerAdapterSafely(() => Hive.registerAdapter(WalkRecordAdapter()));
     _registerAdapterSafely(() => Hive.registerAdapter(HealthStatusAdapter()));
     _registerAdapterSafely(() => Hive.registerAdapter(ExcretionTypeAdapter()));
     _registerAdapterSafely(() => Hive.registerAdapter(StoolConditionAdapter()));
