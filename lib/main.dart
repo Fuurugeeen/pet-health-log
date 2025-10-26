@@ -16,17 +16,9 @@ void main() async {
   // Hiveの初期化
   await HiveService.initialize();
   
-  // 初回起動時にサンプルデータを生成
-  final prefs = await SharedPreferences.getInstance();
-  final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
-  
-  if (isFirstLaunch) {
-    print('初回起動：サンプルデータを生成します');
-    await SampleDataService.generateInitialSampleData();
-    await prefs.setBool('isFirstLaunch', false);
-  } else {
-    print('2回目以降の起動：サンプルデータ生成をスキップ');
-  }
+  // サンプルデータを生成（デバッグ用）
+  print('サンプルデータを生成します');
+  await SampleDataService.generateInitialSampleData();
   
   runApp(
     DevicePreview(
