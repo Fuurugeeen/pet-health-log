@@ -311,7 +311,7 @@ class DashboardScreen extends ConsumerWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 32),
+          Icon(icon, size: 32, color: Colors.white),
           const SizedBox(height: 8),
           Text(
             title,
