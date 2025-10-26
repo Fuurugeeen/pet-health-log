@@ -12,26 +12,38 @@ class SampleDataService {
   
   // 初回起動時のシンプルなサンプルデータ生成
   static Future<void> generateInitialSampleData() async {
-    final petRepository = PetRepository();
-    
-    // デフォルトのサンプルペット（ポチ）を作成
-    final samplePet = Pet(
-      id: _uuid.v4(),
-      ownerId: 'default_user', // デフォルトユーザーID
-      name: 'ポチ',
-      type: PetType.dog,
-      breed: '柴犬',
-      birthDate: DateTime.now().subtract(const Duration(days: 365 * 3)), // 3歳
-      gender: Gender.male,
-      weight: 8.5,
-      medicalHistory: [],
-      allergies: [],
-      veterinarian: 'サンプル動物病院',
-      createdAt: DateTime.now(),
-      updatedAt: DateTime.now(),
-    );
-    
-    await petRepository.createPet(samplePet);
+    try {
+      final petRepository = PetRepository();
+      
+      // 既存のペットがある場合はスキップ
+      final existingPets = await petRepository.getAllPets();
+      if (existingPets.isNotEmpty) {
+        print('既存のペットがあるため、サンプルデータの生成をスキップします');
+        return;
+      }
+      
+      // デフォルトのサンプルペット（ポチ）を作成
+      final samplePet = Pet(
+        id: _uuid.v4(),
+        ownerId: 'default_user', // デフォルトユーザーID
+        name: 'ポチ',
+        type: PetType.dog,
+        breed: '柴犬',
+        birthDate: DateTime.now().subtract(const Duration(days: 365 * 3)), // 3歳
+        gender: Gender.male,
+        weight: 8.5,
+        medicalHistory: [],
+        allergies: [],
+        veterinarian: 'サンプル動物病院',
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+      );
+      
+      await petRepository.createPet(samplePet);
+      print('サンプルペット「${samplePet.name}」を作成しました');
+    } catch (error) {
+      print('サンプルデータ生成エラー: $error');
+    }
   }
 
   static Future<void> generateSampleData() async {

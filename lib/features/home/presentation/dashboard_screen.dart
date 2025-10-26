@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/date_utils.dart';
@@ -92,10 +93,8 @@ class DashboardScreen extends ConsumerWidget {
             const SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed: () {
-                // タブ切り替えコールバックで設定タブ（index: 4）に移動
-                if (onTabChanged != null) {
-                  onTabChanged!(4);
-                }
+                // 直接ペット追加画面へ遷移
+                context.go('/pets/form');
               },
               icon: const Icon(Icons.add),
               label: const Text('ペットを登録'),
