@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
@@ -10,7 +9,9 @@ import '../../../shared/providers/pet_provider.dart';
 import '../../../shared/widgets/bottom_navigation.dart';
 
 class RecordFormScreen extends ConsumerStatefulWidget {
-  const RecordFormScreen({super.key});
+  final bool showBottomNav;
+  
+  const RecordFormScreen({super.key, this.showBottomNav = true});
 
   @override
   ConsumerState<RecordFormScreen> createState() => _RecordFormScreenState();
@@ -26,7 +27,7 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   final _foodAmountController = TextEditingController();
   int _appetiteLevel = 3;
   final _mealNotesController = TextEditingController();
-  List<MealRecord> _meals = [];
+  final List<MealRecord> _meals = [];
 
   // 投薬記録
   final _medicationNameController = TextEditingController();
@@ -34,7 +35,7 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   final _administrationController = TextEditingController();
   bool _hasSideEffects = false;
   final _sideEffectController = TextEditingController();
-  List<MedicationRecord> _medications = [];
+  final List<MedicationRecord> _medications = [];
 
   // 排泄記録
   ExcretionType _excretionType = ExcretionType.stool;
@@ -43,13 +44,13 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   final _amountController = TextEditingController();
   bool _hasAbnormality = false;
   final _excretionNotesController = TextEditingController();
-  List<ExcretionRecord> _excretions = [];
+  final List<ExcretionRecord> _excretions = [];
 
   // 体調記録
   final _temperatureController = TextEditingController();
   final _weightController = TextEditingController();
   int _activityLevel = 3;
-  List<Symptom> _selectedSymptoms = [];
+  final List<Symptom> _selectedSymptoms = [];
   final _healthNotesController = TextEditingController();
 
   @override
@@ -145,7 +146,7 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
                 ),
               ],
             ),
-      bottomNavigationBar: const BottomNavigation(currentIndex: 1),
+      bottomNavigationBar: widget.showBottomNav ? const BottomNavigation(currentIndex: 1) : null,
     );
   }
 
@@ -659,15 +660,14 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
     final selectedPet = ref.read(selectedPetProvider);
     if (selectedPet == null) return;
 
-    final healthStatus = HealthStatus(
-      temperature: double.tryParse(_temperatureController.text),
-      weight: double.tryParse(_weightController.text),
-      activityLevel: _activityLevel,
-      symptoms: _selectedSymptoms,
-      notes: _healthNotesController.text.isEmpty ? null : _healthNotesController.text,
-    );
-
     // TODO: 記録をHiveに保存
+    // final healthStatus = HealthStatus(
+    //   temperature: double.tryParse(_temperatureController.text),
+    //   weight: double.tryParse(_weightController.text),
+    //   activityLevel: _activityLevel,
+    //   symptoms: _selectedSymptoms,
+    //   notes: _healthNotesController.text.isEmpty ? null : _healthNotesController.text,
+    // );
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('記録を保存しました'),
