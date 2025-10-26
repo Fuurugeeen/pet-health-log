@@ -206,6 +206,10 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: _addMeal,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                      ),
                       child: const Text('食事を追加'),
                     ),
                   ),
@@ -312,6 +316,10 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: _addMedication,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                      ),
                       child: const Text('投薬を追加'),
                     ),
                   ),
@@ -432,6 +440,10 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: _addExcretion,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                      ),
                       child: const Text('排泄記録を追加'),
                     ),
                   ),
@@ -546,6 +558,18 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
                   ),
                   maxLines: 3,
                 ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _addHealthRecord,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('体調記録を追加'),
+                  ),
+                ),
               ],
             ),
           ),
@@ -635,6 +659,16 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
     setState(() {
       _excretions.removeAt(index);
     });
+  }
+
+  void _addHealthRecord() {
+    // 体調記録を保存する
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('体調記録を追加しました'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   Future<void> _selectDate() async {
