@@ -171,6 +171,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       focusedDay: _focusedDay,
       selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
       calendarFormat: _calendarFormat,
+      locale: 'ja',
       availableCalendarFormats: const {
         CalendarFormat.month: '月',
         CalendarFormat.twoWeeks: '2週間',
@@ -325,40 +326,21 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   }
 
   Widget _buildNoRecord(Pet selectedPet) {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.note_add,
             size: 64,
             color: AppColors.textSecondary,
           ),
-          const SizedBox(height: 16),
-          const Text(
+          SizedBox(height: 16),
+          Text(
             'この日の記録はありません',
             style: TextStyle(
               fontSize: 16,
               color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => DailyRecordDetailScreen(
-                    date: _selectedDay!,
-                    pet: selectedPet,
-                  ),
-                ),
-              );
-            },
-            icon: const Icon(Icons.add, color: Colors.white),
-            label: const Text('記録を追加'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
             ),
           ),
         ],
