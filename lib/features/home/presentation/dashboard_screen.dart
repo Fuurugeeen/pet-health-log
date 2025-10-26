@@ -13,7 +13,7 @@ import '../../../shared/widgets/bottom_navigation.dart';
 
 class DashboardScreen extends ConsumerWidget {
   final bool showBottomNav;
-  final Function(int)? onTabChanged;
+  final Function(int, {int? recordTabIndex})? onTabChanged;
 
   const DashboardScreen(
       {super.key, this.showBottomNav = true, this.onTabChanged});
@@ -276,10 +276,8 @@ class DashboardScreen extends ConsumerWidget {
       onPressed: () {
         // 記録画面に切り替えて、対応するタブを選択
         if (onTabChanged != null) {
-          onTabChanged!(1); // 記録タブに移動
-
-          // TODO: RecordFormScreenのタブを切り替える仕組みが必要
-          // 現在は記録画面に遷移するのみ
+          final tabIndex = _getRecordTabIndex(title);
+          onTabChanged!(1, recordTabIndex: tabIndex); // 記録タブに移動し、対応するタブを指定
         }
       },
       style: ElevatedButton.styleFrom(
@@ -472,6 +470,23 @@ class DashboardScreen extends ConsumerWidget {
         return '猫';
       case PetType.other:
         return 'その他';
+    }
+  }
+
+  int _getRecordTabIndex(String title) {
+    switch (title) {
+      case '食事':
+        return 0;
+      case '投薬':
+        return 1;
+      case '排泄':
+        return 2;
+      case '散歩':
+        return 3;
+      case '体調':
+        return 4;
+      default:
+        return 0;
     }
   }
 }

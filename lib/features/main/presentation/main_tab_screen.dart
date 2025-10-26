@@ -52,6 +52,7 @@ class MainTabScreen extends StatefulWidget {
 class _MainTabScreenState extends State<MainTabScreen> {
   int _currentIndex = 0;
   late PageController _pageController;
+  int? _recordTabIndex;
 
   @override
   void initState() {
@@ -65,9 +66,12 @@ class _MainTabScreenState extends State<MainTabScreen> {
     super.dispose();
   }
 
-  void _onTabTapped(int index) {
+  void _onTabTapped(int index, {int? recordTabIndex}) {
     setState(() {
       _currentIndex = index;
+      if (recordTabIndex != null) {
+        _recordTabIndex = recordTabIndex;
+      }
     });
     _pageController.animateToPage(
       index,
@@ -88,7 +92,7 @@ class _MainTabScreenState extends State<MainTabScreen> {
         },
         children: [
           DashboardScreen(showBottomNav: false, onTabChanged: _onTabTapped), // ボトムナビを表示しない
-          const RecordFormScreen(showBottomNav: false), // ボトムナビを表示しない
+          RecordFormScreen(showBottomNav: false, initialTabIndex: _recordTabIndex), // ボトムナビを表示しない
           const CalendarScreen(),
           const ReportScreen(),
           const SettingsTabContent(),
@@ -96,7 +100,7 @@ class _MainTabScreenState extends State<MainTabScreen> {
       ),
       bottomNavigationBar: TabBottomNavigation(
         currentIndex: _currentIndex,
-        onTap: _onTabTapped,
+        onTap: (index) => _onTabTapped(index),
       ),
     );
   }

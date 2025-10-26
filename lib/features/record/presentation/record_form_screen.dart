@@ -9,8 +9,9 @@ import '../../../shared/widgets/bottom_navigation.dart';
 
 class RecordFormScreen extends ConsumerStatefulWidget {
   final bool showBottomNav;
+  final int? initialTabIndex;
   
-  const RecordFormScreen({super.key, this.showBottomNav = true});
+  const RecordFormScreen({super.key, this.showBottomNav = true, this.initialTabIndex});
 
   @override
   ConsumerState<RecordFormScreen> createState() => _RecordFormScreenState();
@@ -62,7 +63,11 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(
+      length: 5, 
+      vsync: this,
+      initialIndex: widget.initialTabIndex ?? 0,
+    );
   }
 
   @override
