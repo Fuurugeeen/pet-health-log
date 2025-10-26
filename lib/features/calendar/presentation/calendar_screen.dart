@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
+import 'package:table_calendar/table_calendar.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../models/daily_record.dart';
 import '../../../models/pet.dart';
-import '../../../shared/providers/pet_provider.dart';
 import '../../../shared/providers/daily_record_provider.dart';
+import '../../../shared/providers/pet_provider.dart';
 import 'daily_record_detail_screen.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
@@ -125,7 +126,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     // 今月の記録を取得
     final startOfMonth = DateTime(_focusedDay.year, _focusedDay.month, 1);
     final endOfMonth = DateTime(_focusedDay.year, _focusedDay.month + 1, 0);
-    
+
     final recordsAsync = ref.watch(recordsByDateRangeProvider((
       petId: selectedPet.id,
       start: startOfMonth,
@@ -159,7 +160,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     // 記録がある日付のマップを作成
     final recordDates = <DateTime, DailyRecord>{};
     for (final record in records) {
-      final date = DateTime(record.date.year, record.date.month, record.date.day);
+      final date =
+          DateTime(record.date.year, record.date.month, record.date.day);
       recordDates[date] = record;
     }
 
@@ -293,17 +295,21 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           const SizedBox(height: 16),
         ],
         if (record.medications.isNotEmpty) ...[
-          _buildSectionHeader('投薬記録', Icons.medication, record.medications.length),
-          ...record.medications.map((medication) => _buildMedicationItem(medication)),
+          _buildSectionHeader(
+              '投薬記録', Icons.medication, record.medications.length),
+          ...record.medications
+              .map((medication) => _buildMedicationItem(medication)),
           const SizedBox(height: 16),
         ],
         if (record.excretions.isNotEmpty) ...[
           _buildSectionHeader('排泄記録', Icons.bathroom, record.excretions.length),
-          ...record.excretions.map((excretion) => _buildExcretionItem(excretion)),
+          ...record.excretions
+              .map((excretion) => _buildExcretionItem(excretion)),
           const SizedBox(height: 16),
         ],
         _buildSectionHeader('健康状態', Icons.favorite, 1),
-        if (record.healthStatus != null) _buildHealthStatusItem(record.healthStatus!),
+        if (record.healthStatus != null)
+          _buildHealthStatusItem(record.healthStatus!),
         if (record.notes != null && record.notes!.isNotEmpty) ...[
           const SizedBox(height: 16),
           _buildSectionHeader('メモ', Icons.note, 1),
@@ -348,7 +354,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 ),
               );
             },
-            icon: const Icon(Icons.add),
+            icon: const Icon(Icons.add, color: Colors.white),
             label: const Text('記録を追加'),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
@@ -405,11 +411,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ...List.generate(5, (index) => Icon(
-              index < meal.appetiteLevel ? Icons.star : Icons.star_border,
-              size: 16,
-              color: AppColors.warning,
-            )),
+            ...List.generate(
+                5,
+                (index) => Icon(
+                      index < meal.appetiteLevel
+                          ? Icons.star
+                          : Icons.star_border,
+                      size: 16,
+                      color: AppColors.warning,
+                    )),
             const SizedBox(width: 8),
             Text(DateFormat('HH:mm').format(meal.time)),
           ],
@@ -424,7 +434,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       child: ListTile(
         leading: const Icon(Icons.medication, color: AppColors.secondary),
         title: Text(medication.medicationName),
-        subtitle: Text('${medication.dosage} ${medication.administrationMethod}'),
+        subtitle:
+            Text('${medication.dosage} ${medication.administrationMethod}'),
         trailing: Text(DateFormat('HH:mm').format(medication.time)),
       ),
     );
@@ -435,7 +446,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: Icon(
-          excretion.type == ExcretionType.stool ? Icons.circle : Icons.water_drop,
+          excretion.type == ExcretionType.stool
+              ? Icons.circle
+              : Icons.water_drop,
           color: AppColors.accent,
         ),
         title: Text(excretion.type == ExcretionType.stool ? '便' : '尿'),
@@ -456,28 +469,36 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               children: [
                 const Icon(Icons.thermostat, color: AppColors.error, size: 20),
                 const SizedBox(width: 8),
-                Text('体温: ${healthStatus.temperature?.toStringAsFixed(1) ?? '未記録'}°C'),
+                Text(
+                    '体温: ${healthStatus.temperature?.toStringAsFixed(1) ?? '未記録'}°C'),
               ],
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.monitor_weight, color: AppColors.primary, size: 20),
+                const Icon(Icons.monitor_weight,
+                    color: AppColors.primary, size: 20),
                 const SizedBox(width: 8),
-                Text('体重: ${healthStatus.weight?.toStringAsFixed(1) ?? '未記録'}kg'),
+                Text(
+                    '体重: ${healthStatus.weight?.toStringAsFixed(1) ?? '未記録'}kg'),
               ],
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.directions_run, color: AppColors.accent, size: 20),
+                const Icon(Icons.directions_run,
+                    color: AppColors.accent, size: 20),
                 const SizedBox(width: 8),
                 const Text('活動レベル: '),
-                ...List.generate(5, (index) => Icon(
-                  index < healthStatus.activityLevel ? Icons.star : Icons.star_border,
-                  size: 16,
-                  color: AppColors.warning,
-                )),
+                ...List.generate(
+                    5,
+                    (index) => Icon(
+                          index < healthStatus.activityLevel
+                              ? Icons.star
+                              : Icons.star_border,
+                          size: 16,
+                          color: AppColors.warning,
+                        )),
               ],
             ),
             if (healthStatus.symptoms.isNotEmpty) ...[
@@ -493,9 +514,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       children: [
                         const Text('症状:'),
                         ...healthStatus.symptoms.map((symptom) => Text(
-                          '• ${_getSymptomText(symptom)}',
-                          style: const TextStyle(fontSize: 14),
-                        )),
+                              '• ${_getSymptomText(symptom)}',
+                              style: const TextStyle(fontSize: 14),
+                            )),
                       ],
                     ),
                   ),
