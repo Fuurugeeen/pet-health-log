@@ -9,6 +9,30 @@ import '../models/daily_record.dart';
 class SampleDataService {
   static final _uuid = const Uuid();
   static final _random = Random();
+  
+  // 初回起動時のシンプルなサンプルデータ生成
+  static Future<void> generateInitialSampleData() async {
+    final petRepository = PetRepository();
+    
+    // デフォルトのサンプルペット（ポチ）を作成
+    final samplePet = Pet(
+      id: _uuid.v4(),
+      ownerId: 'default_user', // デフォルトユーザーID
+      name: 'ポチ',
+      type: PetType.dog,
+      breed: '柴犬',
+      birthDate: DateTime.now().subtract(const Duration(days: 365 * 3)), // 3歳
+      gender: Gender.male,
+      weight: 8.5,
+      medicalHistory: [],
+      allergies: [],
+      veterinarian: 'サンプル動物病院',
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+    );
+    
+    await petRepository.createPet(samplePet);
+  }
 
   static Future<void> generateSampleData() async {
     // final authRepository = AuthRepository();

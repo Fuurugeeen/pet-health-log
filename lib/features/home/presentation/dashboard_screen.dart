@@ -60,19 +60,19 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildNoPetSelected(BuildContext context) {
-    return const Center(
+    return Center(
       child: Padding(
-        padding: EdgeInsets.all(32.0),
+        padding: const EdgeInsets.all(32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
+            const Icon(
               Icons.pets,
               size: 80,
               color: AppColors.textSecondary,
             ),
-            SizedBox(height: 24),
-            Text(
+            const SizedBox(height: 24),
+            const Text(
               'ペットが登録されていません',
               style: TextStyle(
                 fontSize: 18,
@@ -80,13 +80,29 @@ class DashboardScreen extends ConsumerWidget {
                 color: AppColors.textPrimary,
               ),
             ),
-            SizedBox(height: 8),
-            Text(
-              '設定画面からペットを登録してください',
+            const SizedBox(height: 8),
+            const Text(
+              '最初のペットを登録して\n健康管理を始めましょう',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
                 color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton.icon(
+              onPressed: () {
+                // タブ切り替えコールバックで設定タブ（index: 4）に移動
+                if (onTabChanged != null) {
+                  onTabChanged!(4);
+                }
+              },
+              icon: const Icon(Icons.add),
+              label: const Text('ペットを登録'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
             ),
           ],

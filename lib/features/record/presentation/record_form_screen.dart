@@ -86,6 +86,9 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
         title: const Text(AppStrings.record),
         bottom: TabBar(
           controller: _tabController,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          indicatorColor: Colors.white,
           tabs: const [
             Tab(icon: Icon(Icons.restaurant), text: '食事'),
             Tab(icon: Icon(Icons.medication), text: '投薬'),
