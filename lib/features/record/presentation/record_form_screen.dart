@@ -152,7 +152,8 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   Widget _buildMealTab() {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Column(
+      child: SingleChildScrollView(
+        child: Column(
         children: [
           Card(
             child: Padding(
@@ -243,6 +244,7 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
             ),
           ],
         ],
+        ),
       ),
     );
   }
@@ -250,7 +252,8 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   Widget _buildMedicationTab() {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Column(
+      child: SingleChildScrollView(
+        child: Column(
         children: [
           Card(
             child: Padding(
@@ -347,6 +350,7 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
             ),
           ],
         ],
+        ),
       ),
     );
   }
@@ -354,7 +358,8 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   Widget _buildExcretionTab() {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Column(
+      child: SingleChildScrollView(
+        child: Column(
         children: [
           Card(
             child: Padding(
@@ -465,6 +470,7 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
             ),
           ],
         ],
+        ),
       ),
     );
   }

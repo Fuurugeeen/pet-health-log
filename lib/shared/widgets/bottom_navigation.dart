@@ -59,3 +59,46 @@ class BottomNavigation extends StatelessWidget {
     );
   }
 }
+
+// タブ専用のボトムナビゲーション（画面遷移なし）
+class TabBottomNavigation extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onTap;
+
+  const TabBottomNavigation({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomNavigationBar(
+      currentIndex: currentIndex,
+      type: BottomNavigationBarType.fixed,
+      onTap: onTap,
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: AppStrings.home,
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.add_circle),
+          label: AppStrings.record,
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.calendar_month),
+          label: AppStrings.calendar,
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.analytics),
+          label: AppStrings.report,
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.settings),
+          label: AppStrings.settings,
+        ),
+      ],
+    );
+  }
+}
