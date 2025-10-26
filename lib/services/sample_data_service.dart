@@ -11,7 +11,7 @@ class SampleDataService {
   static final _random = Random();
 
   static Future<void> generateSampleData() async {
-    final authRepository = AuthRepository();
+    // final authRepository = AuthRepository();
     final petRepository = PetRepository();
 
     // サンプルユーザーの作成
@@ -66,22 +66,22 @@ class SampleDataService {
         final date = DateTime.now().subtract(Duration(days: i));
         
         // 食事記録
-        final meals = [
-          MealRecord(
-            id: _uuid.v4(),
-            time: DateTime(date.year, date.month, date.day, 8, 0),
-            foodType: '朝食（ドライフード）',
-            amount: 50 + _random.nextDouble() * 20,
-            appetiteLevel: 3 + _random.nextInt(3),
-          ),
-          MealRecord(
-            id: _uuid.v4(),
-            time: DateTime(date.year, date.month, date.day, 18, 0),
-            foodType: '夕食（ドライフード）',
-            amount: 50 + _random.nextDouble() * 20,
-            appetiteLevel: 3 + _random.nextInt(3),
-          ),
-        ];
+        // final meals = [
+        //   MealRecord(
+        //     id: _uuid.v4(),
+        //     time: DateTime(date.year, date.month, date.day, 8, 0),
+        //     foodType: '朝食（ドライフード）',
+        //     amount: 50 + _random.nextDouble() * 20,
+        //     appetiteLevel: 3 + _random.nextInt(3),
+        //   ),
+        //   MealRecord(
+        //     id: _uuid.v4(),
+        //     time: DateTime(date.year, date.month, date.day, 18, 0),
+        //     foodType: '夕食（ドライフード）',
+        //     amount: 50 + _random.nextDouble() * 20,
+        //     appetiteLevel: 3 + _random.nextInt(3),
+        //   ),
+        // ];
 
         // 排泄記録
         final excretions = <ExcretionRecord>[];
@@ -98,14 +98,14 @@ class SampleDataService {
         }
 
         // 体調記録
-        final healthStatus = HealthStatus(
-          temperature: 38.0 + _random.nextDouble() * 2, // 38-40度
-          weight: pet.weight + (_random.nextDouble() - 0.5) * 0.2, // ±0.1kg
-          activityLevel: 3 + _random.nextInt(3),
-          symptoms: _random.nextDouble() < 0.2 // 20%の確率で症状あり
-              ? [Symptom.values[_random.nextInt(Symptom.values.length)]]
-              : [],
-        );
+        // final healthStatus = HealthStatus(
+        //   temperature: 38.0 + _random.nextDouble() * 2, // 38-40度
+        //   weight: pet.weight + (_random.nextDouble() - 0.5) * 0.2, // ±0.1kg
+        //   activityLevel: 3 + _random.nextInt(3),
+        //   symptoms: _random.nextDouble() < 0.2 // 20%の確率で症状あり
+        //       ? [Symptom.values[_random.nextInt(Symptom.values.length)]]
+        //       : [],
+        // );
 
         // 投薬記録（たまに）
         final medications = <MedicationRecord>[];
@@ -122,20 +122,19 @@ class SampleDataService {
           );
         }
 
-        final dailyRecord = DailyRecord(
-          id: _uuid.v4(),
-          petId: pet.id,
-          date: date,
-          meals: meals,
-          medications: medications,
-          excretions: excretions,
-          healthStatus: healthStatus,
-          notes: _random.nextDouble() < 0.1 ? '今日は元気でした' : null,
-          createdAt: date,
-          updatedAt: date,
-        );
-
         // TODO: DailyRecordRepositoryに保存
+        // final dailyRecord = DailyRecord(
+        //   id: _uuid.v4(),
+        //   petId: pet.id,
+        //   date: date,
+        //   meals: meals,
+        //   medications: medications,
+        //   excretions: excretions,
+        //   healthStatus: healthStatus,
+        //   notes: _random.nextDouble() < 0.1 ? '今日は元気でした' : null,
+        //   createdAt: date,
+        //   updatedAt: date,
+        // );
         // await dailyRecordRepository.createRecord(dailyRecord);
       }
     }
