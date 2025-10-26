@@ -3,23 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../home/presentation/dashboard_screen.dart';
 import '../../record/presentation/record_form_screen.dart';
+import '../../calendar/presentation/calendar_screen.dart';
 import '../../../shared/providers/auth_provider.dart';
 import '../../../shared/widgets/bottom_navigation.dart';
-
-// カレンダー画面（仮実装）
-class CalendarTabContent extends StatelessWidget {
-  const CalendarTabContent({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('カレンダー')),
-      body: const Center(
-        child: Text('カレンダー画面（Phase 9で実装予定）'),
-      ),
-    );
-  }
-}
 
 // レポート画面（仮実装）
 class ReportTabContent extends StatelessWidget {
@@ -115,8 +101,8 @@ class _MainTabScreenState extends State<MainTabScreen> {
         },
         children: const [
           DashboardScreen(showBottomNav: false), // ボトムナビを表示しない
-          RecordFormScreen(),
-          CalendarTabContent(),
+          RecordFormScreen(showBottomNav: false), // ボトムナビを表示しない
+          CalendarScreen(),
           ReportTabContent(),
           SettingsTabContent(),
         ],
