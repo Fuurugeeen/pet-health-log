@@ -23,17 +23,18 @@ class DailyRecordAdapter extends TypeAdapter<DailyRecord> {
       meals: (fields[3] as List).cast<MealRecord>(),
       medications: (fields[4] as List).cast<MedicationRecord>(),
       excretions: (fields[5] as List).cast<ExcretionRecord>(),
-      healthStatus: fields[6] as HealthStatus?,
-      notes: fields[7] as String?,
-      createdAt: fields[8] as DateTime,
-      updatedAt: fields[9] as DateTime,
+      walks: (fields[6] as List).cast<WalkRecord>(),
+      healthStatus: fields[7] as HealthStatus?,
+      notes: fields[8] as String?,
+      createdAt: fields[9] as DateTime,
+      updatedAt: fields[10] as DateTime,
     );
   }
 
   @override
   void write(BinaryWriter writer, DailyRecord obj) {
     writer
-      ..writeByte(10)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -47,12 +48,14 @@ class DailyRecordAdapter extends TypeAdapter<DailyRecord> {
       ..writeByte(5)
       ..write(obj.excretions)
       ..writeByte(6)
-      ..write(obj.healthStatus)
+      ..write(obj.walks)
       ..writeByte(7)
-      ..write(obj.notes)
+      ..write(obj.healthStatus)
       ..writeByte(8)
-      ..write(obj.createdAt)
+      ..write(obj.notes)
       ..writeByte(9)
+      ..write(obj.createdAt)
+      ..writeByte(10)
       ..write(obj.updatedAt);
   }
 
@@ -164,6 +167,61 @@ class MedicationRecordAdapter extends TypeAdapter<MedicationRecord> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is MedicationRecordAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class WalkRecordAdapter extends TypeAdapter<WalkRecord> {
+  @override
+  final int typeId = 13;
+
+  @override
+  WalkRecord read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return WalkRecord(
+      id: fields[0] as String,
+      startTime: fields[1] as DateTime,
+      endTime: fields[2] as DateTime,
+      duration: fields[3] as int,
+      distance: fields[4] as double?,
+      route: fields[5] as String?,
+      activityLevel: fields[6] as int,
+      notes: fields[7] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, WalkRecord obj) {
+    writer
+      ..writeByte(8)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.startTime)
+      ..writeByte(2)
+      ..write(obj.endTime)
+      ..writeByte(3)
+      ..write(obj.duration)
+      ..writeByte(4)
+      ..write(obj.distance)
+      ..writeByte(5)
+      ..write(obj.route)
+      ..writeByte(6)
+      ..write(obj.activityLevel)
+      ..writeByte(7)
+      ..write(obj.notes);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is WalkRecordAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

@@ -45,6 +45,13 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   final _excretionNotesController = TextEditingController();
   final List<ExcretionRecord> _excretions = [];
 
+  // 散歩記録
+  final _routeController = TextEditingController();
+  final _distanceController = TextEditingController();
+  int _walkActivityLevel = 3;
+  final _walkNotesController = TextEditingController();
+  final List<WalkRecord> _walks = [];
+
   // 体調記録
   final _temperatureController = TextEditingController();
   final _weightController = TextEditingController();
@@ -55,7 +62,7 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -71,6 +78,9 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
     _colorController.dispose();
     _amountController.dispose();
     _excretionNotesController.dispose();
+    _routeController.dispose();
+    _distanceController.dispose();
+    _walkNotesController.dispose();
     _temperatureController.dispose();
     _weightController.dispose();
     _healthNotesController.dispose();
@@ -93,6 +103,7 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
             Tab(icon: Icon(Icons.restaurant), text: '食事'),
             Tab(icon: Icon(Icons.medication), text: '投薬'),
             Tab(icon: Icon(Icons.bathroom), text: '排泄'),
+            Tab(icon: Icon(Icons.directions_walk), text: '散歩'),
             Tab(icon: Icon(Icons.favorite), text: '体調'),
           ],
         ),
@@ -136,6 +147,7 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
                       _buildMealTab(),
                       _buildMedicationTab(),
                       _buildExcretionTab(),
+                      _buildWalkTab(),
                       _buildHealthTab(),
                     ],
                   ),
@@ -484,6 +496,110 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
     );
   }
 
+  Widget _buildWalkTab() {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      '散歩を追加',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _routeController,
+                      decoration: const InputDecoration(
+                        labelText: '散歩コース・場所',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _distanceController,
+                      decoration: const InputDecoration(
+                        labelText: '距離 (km)',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(height: 12),
+                    Text('活動レベル: $_walkActivityLevel'),
+                    Slider(
+                      value: _walkActivityLevel.toDouble(),
+                      min: 1,
+                      max: 5,
+                      divisions: 4,
+                      onChanged: (value) {
+                        setState(() {
+                          _walkActivityLevel = value.round();
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _walkNotesController,
+                      decoration: const InputDecoration(
+                        labelText: 'メモ',
+                        border: OutlineInputBorder(),
+                      ),
+                      maxLines: 2,
+                    ),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _addWalk,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                        ),
+                        child: const Text('散歩を追加'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (_walks.isNotEmpty) ...[
+              const Text(
+                '今日の散歩記録',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _walks.length,
+                  itemBuilder: (context, index) {
+                    final walk = _walks[index];
+                    return Card(
+                      child: ListTile(
+                        title: Text(walk.route ?? '散歩'),
+                        subtitle: Text(
+                          '${AppDateUtils.formatTime(walk.startTime)} • ${walk.duration}分${walk.distance != null ? ' • ${walk.distance}km' : ''}',
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () => _removeWalk(index),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildHealthTab() {
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -658,6 +774,36 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   void _removeExcretion(int index) {
     setState(() {
       _excretions.removeAt(index);
+    });
+  }
+
+  void _addWalk() {
+    final now = DateTime.now();
+    final duration = 30; // デフォルト30分
+    
+    final walk = WalkRecord(
+      id: const Uuid().v4(),
+      startTime: now.subtract(Duration(minutes: duration)),
+      endTime: now,
+      duration: duration,
+      distance: double.tryParse(_distanceController.text),
+      route: _routeController.text.isEmpty ? null : _routeController.text,
+      activityLevel: _walkActivityLevel,
+      notes: _walkNotesController.text.isEmpty ? null : _walkNotesController.text,
+    );
+
+    setState(() {
+      _walks.add(walk);
+      _routeController.clear();
+      _distanceController.clear();
+      _walkNotesController.clear();
+      _walkActivityLevel = 3;
+    });
+  }
+
+  void _removeWalk(int index) {
+    setState(() {
+      _walks.removeAt(index);
     });
   }
 
