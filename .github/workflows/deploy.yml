@@ -17,6 +17,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # コミットメッセージに "release" が含まれている場合のみ実行
+    if: contains(github.event.head_commit.message, 'release')
     
     steps:
     - name: Checkout

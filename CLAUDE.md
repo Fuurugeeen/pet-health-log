@@ -78,12 +78,14 @@ flutter pub upgrade
 ```
 
 ### GitHub Pages デプロイ手順
-1. `make release` を実行してビルド
-2. GitHubリポジトリの Settings > Pages で以下を設定:
+1. `make release` を実行
+   - Flutter Webアプリをビルド
+   - "release" メッセージで空コミットを作成
+   - GitHub Actionsで自動デプロイを開始
+2. 初回セットアップ時のみ、GitHubリポジトリの Settings > Pages で:
    - Source: GitHub Actions を選択
-3. または、build/webフォルダの内容を手動でデプロイ
 
-注: ビルド結果は `build/web` フォルダに作成されます。
+注: GitHub Actionsはコミットメッセージに "release" が含まれる場合のみ実行されます。
 
 ### 開発環境
 - プロジェクト名: pet_health_log

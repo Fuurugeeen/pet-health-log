@@ -33,10 +33,12 @@ release: build
 	@echo "GitHub Pagesへのデプロイを準備中..."
 	@echo "ビルド完了！"
 	@echo ""
-	@echo "GitHub Pagesでデプロイする場合:"
-	@echo "1. GitHubリポジトリの Settings > Pages で:"
-	@echo "   - Source: GitHub Actions を選択"
+	@echo "GitHub Actions経由でデプロイを開始します..."
+	@git add .
+	@git commit --allow-empty -m "release: GitHub Pagesにデプロイ"
+	@git push origin main
 	@echo ""
-	@echo "2. または、build/webフォルダを手動でデプロイ"
+	@echo "✅ リリースコミットを作成し、GitHub Actionsでデプロイを開始しました"
 	@echo ""
-	@echo "注: build/webフォルダにビルド済みファイルが作成されています。"
+	@echo "デプロイ状況は以下で確認できます:"
+	@echo "https://github.com/$(shell git remote get-url origin | sed 's/.*github.com[:/]\(.*\)\.git/\1/')/actions"
