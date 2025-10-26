@@ -1,30 +1,73 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:pet_health_log/main.dart';
+import 'package:pet_health_log/core/constants/app_strings.dart';
+import 'package:pet_health_log/features/auth/presentation/login_screen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('Pet Health Log App Tests', () {
+    testWidgets('Login screen renders correctly', (WidgetTester tester) async {
+      // Build login screen with ProviderScope
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MaterialApp(
+            home: LoginScreen(),
+          ),
+        ),
+      );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+      // Wait for the screen to settle
+      await tester.pumpAndSettle();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+      // Verify that login screen elements are displayed
+      expect(find.text(AppStrings.appName), findsOneWidget);
+      expect(find.text('ユーザー名'), findsOneWidget);
+      expect(find.text('ログイン'), findsOneWidget);
+    });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    testWidgets('Login form validation works', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MaterialApp(
+            home: LoginScreen(),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Find and tap login button without entering username
+      final loginButton = find.text('ログイン');
+      expect(loginButton, findsOneWidget);
+      
+      await tester.tap(loginButton);
+      await tester.pump();
+
+      // Should show validation error
+      expect(find.text('ユーザー名を入力してください'), findsOneWidget);
+    });
+
+    testWidgets('Username input works', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const ProviderScope(
+          child: MaterialApp(
+            home: LoginScreen(),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Find username field and enter text
+      final usernameField = find.byType(TextFormField);
+      expect(usernameField, findsOneWidget);
+      
+      await tester.enterText(usernameField, 'テストユーザー');
+      await tester.pump();
+
+      // Verify text was entered
+      expect(find.text('テストユーザー'), findsOneWidget);
+    });
   });
 }
