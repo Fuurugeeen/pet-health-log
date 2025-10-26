@@ -44,9 +44,9 @@ class HiveService {
   
   static Future<void> openBoxes() async {
     await Future.wait([
-      Hive.openBox(userBoxName),
-      Hive.openBox(petBoxName),
-      Hive.openBox(dailyRecordBoxName),
+      Hive.openBox<User>(userBoxName),
+      Hive.openBox<Pet>(petBoxName),
+      Hive.openBox<DailyRecord>(dailyRecordBoxName),
       Hive.openBox(shareSettingBoxName),
       Hive.openBox(appSettingsBoxName),
     ]);
@@ -56,9 +56,9 @@ class HiveService {
     return Hive.box<T>(boxName);
   }
   
-  static Box getUserBox() => getBox(userBoxName);
-  static Box getPetBox() => getBox(petBoxName);
-  static Box getDailyRecordBox() => getBox(dailyRecordBoxName);
+  static Box<User> getUserBox() => getBox<User>(userBoxName);
+  static Box<Pet> getPetBox() => getBox<Pet>(petBoxName);
+  static Box<DailyRecord> getDailyRecordBox() => getBox<DailyRecord>(dailyRecordBoxName);
   static Box getShareSettingBox() => getBox(shareSettingBoxName);
   static Box getAppSettingsBox() => getBox(appSettingsBoxName);
   
