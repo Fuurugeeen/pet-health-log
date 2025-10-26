@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/pet/presentation/pet_list_screen.dart';
+import '../../features/record/presentation/record_form_screen.dart';
+import '../../features/home/presentation/dashboard_screen.dart';
 import '../../shared/providers/auth_provider.dart';
 import '../../shared/widgets/bottom_navigation.dart';
 
@@ -13,11 +15,7 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('ホーム')),
-      body: const Center(child: Text('ホーム画面（Phase 8で実装予定）')),
-      bottomNavigationBar: const BottomNavigation(currentIndex: 0),
-    );
+    return const DashboardScreen();
   }
 }
 
@@ -26,11 +24,7 @@ class RecordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('記録')),
-      body: const Center(child: Text('記録画面（Phase 4-7で実装予定）')),
-      bottomNavigationBar: const BottomNavigation(currentIndex: 1),
-    );
+    return const RecordFormScreen();
   }
 }
 
