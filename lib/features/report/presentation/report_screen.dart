@@ -24,9 +24,22 @@ class ReportScreen extends ConsumerStatefulWidget {
   ConsumerState<ReportScreen> createState() => _ReportScreenState();
 }
 
-class _ReportScreenState extends ConsumerState<ReportScreen> {
+class _ReportScreenState extends ConsumerState<ReportScreen>
+    with TickerProviderStateMixin {
   ReportPeriod _selectedPeriod = ReportPeriod.month;
-  int _selectedTabIndex = 0;
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 4, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -174,12 +187,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
         ),
       ),
       child: TabBar(
-        controller: null,
-        onTap: (index) {
-          setState(() {
-            _selectedTabIndex = index;
-          });
-        },
+        controller: _tabController,
         labelColor: AppColors.primary,
         unselectedLabelColor: AppColors.textSecondary,
         indicatorColor: AppColors.primary,
@@ -194,16 +202,26 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
   }
 
   Widget _buildTabContent(Pet selectedPet) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          if (_selectedTabIndex == 0) _buildWeightChart(),
-          if (_selectedTabIndex == 1) _buildFoodChart(),
-          if (_selectedTabIndex == 2) _buildActivityChart(),
-          if (_selectedTabIndex == 3) _buildStatisticsSummary(selectedPet),
-        ],
-      ),
+    return TabBarView(
+      controller: _tabController,
+      children: [
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: _buildWeightChart(),
+        ),
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: _buildFoodChart(),
+        ),
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: _buildActivityChart(),
+        ),
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: _buildStatisticsSummary(selectedPet),
+        ),
+      ],
     );
   }
 
@@ -527,7 +545,10 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
     
     return List.generate(dataCount, (index) {
       final weight = baseWeight + (random.nextDouble() - 0.5) * 0.4; // ±0.2kg のばらつき
-      return FlSpot(index.toDouble(), weight);
+      // NaN値をチェック
+      final x = index.toDouble();
+      final y = weight.isNaN ? baseWeight : weight;
+      return FlSpot(x, y);
     });
   }
 
@@ -537,11 +558,12 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
     
     return List.generate(dataCount, (index) {
       final amount = 100 + random.nextInt(40); // 100-140g の範囲
+      final value = amount.toDouble();
       return BarChartGroupData(
         x: index,
         barRods: [
           BarChartRodData(
-            toY: amount.toDouble(),
+            toY: value.isNaN ? 120.0 : value,
             color: AppColors.secondary,
             width: 16,
           ),
@@ -556,18 +578,18 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
     
     return List.generate(dataCount, (index) {
       final activity = 3 + random.nextInt(3); // 3-5 の範囲
-      return FlSpot(index.toDouble(), activity.toDouble());
+      final x = index.toDouble();
+      final y = activity.toDouble();
+      return FlSpot(x, y.isNaN ? 3.0 : y);
     });
   }
 
   int _getPeriodDays() {
-    switch (_selectedPeriod) {
-      case ReportPeriod.week:
-        return 7;
-      case ReportPeriod.month:
-        return 30;
-      case ReportPeriod.threeMonths:
-        return 90;
-    }
+    final days = switch (_selectedPeriod) {
+      ReportPeriod.week => 7,
+      ReportPeriod.month => 30,
+      ReportPeriod.threeMonths => 90,
+    };
+    return days > 0 ? days : 7; // 最低でも7日分のデータを返す
   }
 }
