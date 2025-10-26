@@ -14,23 +14,32 @@ class HiveService {
     // Hiveの初期化
     await Hive.initFlutter();
     
-    // モデルのアダプターを登録
-    Hive.registerAdapter(UserAdapter());
-    Hive.registerAdapter(UserTypeAdapter());
-    Hive.registerAdapter(PetAdapter());
-    Hive.registerAdapter(PetTypeAdapter());
-    Hive.registerAdapter(GenderAdapter());
-    Hive.registerAdapter(DailyRecordAdapter());
-    Hive.registerAdapter(MealRecordAdapter());
-    Hive.registerAdapter(MedicationRecordAdapter());
-    Hive.registerAdapter(ExcretionRecordAdapter());
-    Hive.registerAdapter(HealthStatusAdapter());
-    Hive.registerAdapter(ExcretionTypeAdapter());
-    Hive.registerAdapter(StoolConditionAdapter());
-    Hive.registerAdapter(SymptomAdapter());
+    // モデルのアダプターを登録（重複チェック付き）
+    _registerAdapterSafely(() => Hive.registerAdapter(UserAdapter()));
+    _registerAdapterSafely(() => Hive.registerAdapter(UserTypeAdapter()));
+    _registerAdapterSafely(() => Hive.registerAdapter(PetAdapter()));
+    _registerAdapterSafely(() => Hive.registerAdapter(PetTypeAdapter()));
+    _registerAdapterSafely(() => Hive.registerAdapter(GenderAdapter()));
+    _registerAdapterSafely(() => Hive.registerAdapter(DailyRecordAdapter()));
+    _registerAdapterSafely(() => Hive.registerAdapter(MealRecordAdapter()));
+    _registerAdapterSafely(() => Hive.registerAdapter(MedicationRecordAdapter()));
+    _registerAdapterSafely(() => Hive.registerAdapter(ExcretionRecordAdapter()));
+    _registerAdapterSafely(() => Hive.registerAdapter(HealthStatusAdapter()));
+    _registerAdapterSafely(() => Hive.registerAdapter(ExcretionTypeAdapter()));
+    _registerAdapterSafely(() => Hive.registerAdapter(StoolConditionAdapter()));
+    _registerAdapterSafely(() => Hive.registerAdapter(SymptomAdapter()));
     
     // ボックスを開く
     await openBoxes();
+  }
+  
+  static void _registerAdapterSafely(void Function() registerFunction) {
+    try {
+      registerFunction();
+    } catch (e) {
+      // アダプターが既に登録済みの場合は無視
+      // print('Adapter already registered: $e');
+    }
   }
   
   static Future<void> openBoxes() async {
