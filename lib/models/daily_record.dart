@@ -23,15 +23,18 @@ class DailyRecord {
   final List<ExcretionRecord> excretions;
 
   @HiveField(6)
-  final HealthStatus? healthStatus;
+  final List<WalkRecord> walks;
 
   @HiveField(7)
-  final String? notes;
+  final HealthStatus? healthStatus;
 
   @HiveField(8)
-  final DateTime createdAt;
+  final String? notes;
 
   @HiveField(9)
+  final DateTime createdAt;
+
+  @HiveField(10)
   final DateTime updatedAt;
 
   DailyRecord({
@@ -41,6 +44,7 @@ class DailyRecord {
     required this.meals,
     required this.medications,
     required this.excretions,
+    required this.walks,
     this.healthStatus,
     this.notes,
     required this.createdAt,
@@ -54,6 +58,7 @@ class DailyRecord {
     List<MealRecord>? meals,
     List<MedicationRecord>? medications,
     List<ExcretionRecord>? excretions,
+    List<WalkRecord>? walks,
     HealthStatus? healthStatus,
     String? notes,
     DateTime? createdAt,
@@ -66,6 +71,7 @@ class DailyRecord {
       meals: meals ?? this.meals,
       medications: medications ?? this.medications,
       excretions: excretions ?? this.excretions,
+      walks: walks ?? this.walks,
       healthStatus: healthStatus ?? this.healthStatus,
       notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
@@ -172,6 +178,66 @@ class MedicationRecord {
       administrationMethod: administrationMethod ?? this.administrationMethod,
       hasSideEffects: hasSideEffects ?? this.hasSideEffects,
       sideEffectDetails: sideEffectDetails ?? this.sideEffectDetails,
+    );
+  }
+}
+
+@HiveType(typeId: 13)
+class WalkRecord {
+  @HiveField(0)
+  final String id;
+
+  @HiveField(1)
+  final DateTime startTime;
+
+  @HiveField(2)
+  final DateTime endTime;
+
+  @HiveField(3)
+  final int duration; // minutes
+
+  @HiveField(4)
+  final double? distance; // km
+
+  @HiveField(5)
+  final String? route;
+
+  @HiveField(6)
+  final int activityLevel; // 1-5
+
+  @HiveField(7)
+  final String? notes;
+
+  WalkRecord({
+    required this.id,
+    required this.startTime,
+    required this.endTime,
+    required this.duration,
+    this.distance,
+    this.route,
+    required this.activityLevel,
+    this.notes,
+  });
+
+  WalkRecord copyWith({
+    String? id,
+    DateTime? startTime,
+    DateTime? endTime,
+    int? duration,
+    double? distance,
+    String? route,
+    int? activityLevel,
+    String? notes,
+  }) {
+    return WalkRecord(
+      id: id ?? this.id,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      duration: duration ?? this.duration,
+      distance: distance ?? this.distance,
+      route: route ?? this.route,
+      activityLevel: activityLevel ?? this.activityLevel,
+      notes: notes ?? this.notes,
     );
   }
 }

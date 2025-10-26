@@ -6,7 +6,9 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../models/pet.dart';
 import '../../../shared/providers/pet_provider.dart';
+import '../../../shared/providers/daily_record_provider.dart';
 import '../../../shared/widgets/bottom_navigation.dart';
+import '../../../models/daily_record.dart';
 
 class DashboardScreen extends ConsumerWidget {
   final bool showBottomNav;
@@ -55,7 +57,7 @@ class DashboardScreen extends ConsumerWidget {
       ),
       body: selectedPet == null
           ? _buildNoPetSelected(context)
-          : _buildDashboard(context, selectedPet),
+          : _buildDashboard(context, ref, selectedPet),
       bottomNavigationBar: showBottomNav ? const BottomNavigation(currentIndex: 0) : null,
     );
   }
@@ -110,7 +112,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDashboard(BuildContext context, pet) {
+  Widget _buildDashboard(BuildContext context, WidgetRef ref, pet) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -157,33 +159,6 @@ class DashboardScreen extends ConsumerWidget {
         ),
         const SizedBox(height: 16),
 
-        // 今日の記録状況
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '今日の記録状況',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _buildProgressItem('食事記録', 0.8, Icons.restaurant),
-                const SizedBox(height: 8),
-                _buildProgressItem('投薬記録', 1.0, Icons.medication),
-                const SizedBox(height: 8),
-                _buildProgressItem('排泄記録', 0.6, Icons.bathroom),
-                const SizedBox(height: 8),
-                _buildProgressItem('体調記録', 0.5, Icons.favorite),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
 
         // クイック記録
         Card(
@@ -236,11 +211,26 @@ class DashboardScreen extends ConsumerWidget {
                     Expanded(
                       child: _buildQuickActionButton(
                         context,
+                        '散歩',
+                        Icons.directions_walk,
+                        Colors.green,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildQuickActionButton(
+                        context,
                         '体調',
                         Icons.favorite,
                         AppColors.warning,
                       ),
                     ),
+                    const SizedBox(width: 8),
+                    Expanded(child: Container()), // 空のスペース
                   ],
                 ),
               ],
@@ -264,9 +254,7 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                _buildRecentRecord('朝食', '完食', '2時間前'),
-                _buildRecentRecord('散歩', '30分', '4時間前'),
-                _buildRecentRecord('投薬', 'アレルギー薬', '昨日'),
+                _buildRecentRecordsWidget(context, ref, pet),
               ],
             ),
           ),
@@ -275,29 +263,6 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildProgressItem(String title, double progress, IconData icon) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: AppColors.primary),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title),
-              const SizedBox(height: 4),
-              LinearProgressIndicator(
-                value: progress,
-                backgroundColor: AppColors.divider,
-                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
-              ),
-            ],
-          ),
-        ),
-        Text('${(progress * 100).round()}%'),
-      ],
-    );
-  }
 
   Widget _buildQuickActionButton(
     BuildContext context,
@@ -323,8 +288,11 @@ class DashboardScreen extends ConsumerWidget {
             case '排泄':
               tabIndex = 2;
               break;
-            case '体調':
+            case '散歩':
               tabIndex = 3;
+              break;
+            case '体調':
+              tabIndex = 4;
               break;
           }
           
@@ -335,16 +303,125 @@ class DashboardScreen extends ConsumerWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon),
-          const SizedBox(height: 4),
-          Text(title),
+          Icon(icon, size: 32),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  Widget _buildRecentRecordsWidget(BuildContext context, WidgetRef ref, pet) {
+    final now = DateTime.now();
+    final sevenDaysAgo = now.subtract(const Duration(days: 7));
+    final recordsAsync = ref.watch(recordsByDateRangeProvider((
+      petId: pet.id,
+      start: sevenDaysAgo,
+      end: now,
+    )));
+
+    return recordsAsync.when(
+      data: (records) {
+        if (records.isEmpty) {
+          return const Text(
+            'まだ記録がありません',
+            style: TextStyle(color: AppColors.textSecondary),
+          );
+        }
+
+        // 最新の記録からリスト作成
+        final allItems = <Map<String, dynamic>>[];
+        
+        for (final record in records) {
+          // 食事記録
+          for (final meal in record.meals) {
+            allItems.add({
+              'title': '食事',
+              'subtitle': '${meal.foodType} (${_getAppetiteText(meal.appetiteLevel)})',
+              'time': meal.time,
+            });
+          }
+          
+          // 散歩記録
+          for (final walk in record.walks) {
+            allItems.add({
+              'title': '散歩',
+              'subtitle': '${walk.duration}分',
+              'time': walk.startTime,
+            });
+          }
+          
+          // 投薬記録
+          for (final medication in record.medications) {
+            allItems.add({
+              'title': '投薬',
+              'subtitle': medication.medicationName,
+              'time': medication.time,
+            });
+          }
+          
+          // 排泄記録
+          for (final excretion in record.excretions) {
+            allItems.add({
+              'title': '排泄',
+              'subtitle': excretion.type.displayName,
+              'time': excretion.time,
+            });
+          }
+        }
+
+        // 時間でソートして最新3件
+        allItems.sort((a, b) => (b['time'] as DateTime).compareTo(a['time'] as DateTime));
+        final displayItems = allItems.take(3);
+
+        if (displayItems.isEmpty) {
+          return const Text(
+            'まだ記録がありません',
+            style: TextStyle(color: AppColors.textSecondary),
+          );
+        }
+
+        return Column(
+          children: displayItems.map((item) => 
+            _buildRecentRecord(
+              item['title']!,
+              item['subtitle']!,
+              AppDateUtils.getRelativeTime(item['time'] as DateTime),
+            )
+          ).toList(),
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stack) => const Text(
+        '記録の読み込みに失敗しました',
+        style: TextStyle(color: AppColors.textSecondary),
+      ),
+    );
+  }
+
+  String _getAppetiteText(int level) {
+    switch (level) {
+      case 1: return '食べない';
+      case 2: return '少し';
+      case 3: return '普通';
+      case 4: return 'よく食べる';
+      case 5: return '完食';
+      default: return '普通';
+    }
   }
 
   Widget _buildRecentRecord(String title, String subtitle, String time) {
