@@ -5,7 +5,6 @@ import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/date_utils.dart';
 import '../../../models/daily_record.dart';
 import '../../../shared/providers/pet_provider.dart';
-import '../../../shared/providers/daily_record_provider.dart';
 import '../../../shared/widgets/bottom_navigation.dart';
 
 class RecordFormScreen extends ConsumerStatefulWidget {
@@ -59,8 +58,6 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
   int _activityLevel = 3;
   final List<Symptom> _selectedSymptoms = [];
   final _healthNotesController = TextEditingController();
-
-  bool _isSaving = false;
 
   @override
   void initState() {
@@ -662,39 +659,16 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
                   maxLines: 3,
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: _addHealthRecord,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                        ),
-                        child: const Text('体調記録を追加'),
-                      ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _addHealthRecord,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: _isSaving ? null : _saveAllRecords,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue,
-                          foregroundColor: Colors.white,
-                        ),
-                        child: _isSaving
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                ),
-                              )
-                            : const Text('全記録を保存'),
-                      ),
-                    ),
-                  ],
+                    child: const Text('体調記録を追加'),
+                  ),
                 ),
               ],
             ),
@@ -821,147 +795,10 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
     // 体調記録をローカルに保持
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('体調記録を追加しました（未保存）'),
-        backgroundColor: Colors.orange,
+        content: Text('体調記録を追加しました'),
+        backgroundColor: Colors.green,
       ),
     );
-  }
-
-  Future<void> _saveAllRecords() async {
-    final selectedPet = ref.read(selectedPetProvider);
-    if (selectedPet == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('ペットが選択されていません'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    setState(() {
-      _isSaving = true;
-    });
-
-    try {
-      final notifier = ref.read(dailyRecordNotifierProvider.notifier);
-
-      // 体調記録の作成
-      HealthStatus? healthStatus;
-      if (_temperatureController.text.isNotEmpty ||
-          _weightController.text.isNotEmpty ||
-          _selectedSymptoms.isNotEmpty ||
-          _healthNotesController.text.isNotEmpty) {
-        healthStatus = HealthStatus(
-          temperature: double.tryParse(_temperatureController.text),
-          weight: double.tryParse(_weightController.text),
-          activityLevel: _activityLevel,
-          symptoms: _selectedSymptoms,
-          notes: _healthNotesController.text.isEmpty ? null : _healthNotesController.text,
-        );
-      }
-
-      // 既存の記録があるかチェック
-      final repository = ref.read(dailyRecordRepositoryProvider);
-      final existingRecord = await repository.getRecordByDate(selectedPet.id, _selectedDate);
-
-      final now = DateTime.now();
-      if (existingRecord != null) {
-        // 既存の記録を更新
-        final updatedRecord = DailyRecord(
-          id: existingRecord.id,
-          petId: existingRecord.petId,
-          date: existingRecord.date,
-          meals: [...existingRecord.meals, ..._meals],
-          medications: [...existingRecord.medications, ..._medications],
-          excretions: [...existingRecord.excretions, ..._excretions],
-          walks: [...existingRecord.walks, ..._walks],
-          healthStatus: healthStatus ?? existingRecord.healthStatus,
-          notes: existingRecord.notes,
-          createdAt: existingRecord.createdAt,
-          updatedAt: now,
-        );
-        await notifier.updateRecord(updatedRecord);
-      } else {
-        // 新しい記録を作成
-        final newRecord = DailyRecord(
-          id: const Uuid().v4(),
-          petId: selectedPet.id,
-          date: _selectedDate,
-          meals: _meals,
-          medications: _medications,
-          excretions: _excretions,
-          walks: _walks,
-          healthStatus: healthStatus,
-          notes: null,
-          createdAt: now,
-          updatedAt: now,
-        );
-        await notifier.createRecord(newRecord);
-      }
-
-      // 成功時のフィードバック
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('記録を保存しました'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
-
-      // フォームをクリア
-      _clearAllForms();
-
-    } catch (error) {
-      // エラー時のフィードバック
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('保存に失敗しました: $error'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      setState(() {
-        _isSaving = false;
-      });
-    }
-  }
-
-  void _clearAllForms() {
-    setState(() {
-      // 各タブのフォームをクリア
-      _foodTypeController.clear();
-      _foodAmountController.clear();
-      _mealNotesController.clear();
-      _appetiteLevel = 3;
-      _meals.clear();
-
-      _medicationNameController.clear();
-      _dosageController.clear();
-      _administrationController.clear();
-      _sideEffectController.clear();
-      _hasSideEffects = false;
-      _medications.clear();
-
-      _excretionNotesController.clear();
-      _hasAbnormality = false;
-      _excretions.clear();
-
-      _routeController.clear();
-      _distanceController.clear();
-      _walkNotesController.clear();
-      _walkActivityLevel = 3;
-      _walks.clear();
-
-      _temperatureController.clear();
-      _weightController.clear();
-      _healthNotesController.clear();
-      _activityLevel = 3;
-      _selectedSymptoms.clear();
-    });
   }
 
   Future<void> _selectDate() async {
