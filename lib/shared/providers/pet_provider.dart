@@ -23,13 +23,8 @@ class PetsNotifier extends StateNotifier<AsyncValue<List<Pet>>> {
 
   Future<void> _loadPets() async {
     try {
-      final currentUser = _ref.read(currentUserProvider).value;
-      if (currentUser == null) {
-        state = const AsyncValue.data([]);
-        return;
-      }
-
-      final pets = await _petRepository.getPets(currentUser.id);
+      // モック版では認証を簡略化し、全ペットを取得
+      final pets = await _petRepository.getAllPets();
       state = AsyncValue.data(pets);
       
       // 最初のペットを選択状態にする
