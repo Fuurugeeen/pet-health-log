@@ -16,7 +16,7 @@ void main() async {
   
   runApp(
     DevicePreview(
-      enabled: !kReleaseMode, // リリースビルドでは無効化
+      enabled: true, // 常に有効化（リリースビルドでも使用）
       builder: (context) => const ProviderScope(
         child: MyApp(),
       ),
