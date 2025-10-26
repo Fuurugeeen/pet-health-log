@@ -1,5 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/user.dart';
+import '../models/pet.dart';
 
 class HiveService {
   static const String userBoxName = 'users';
@@ -15,6 +16,9 @@ class HiveService {
     // モデルのアダプターを登録
     Hive.registerAdapter(UserAdapter());
     Hive.registerAdapter(UserTypeAdapter());
+    Hive.registerAdapter(PetAdapter());
+    Hive.registerAdapter(PetTypeAdapter());
+    Hive.registerAdapter(GenderAdapter());
     
     // ボックスを開く
     await openBoxes();
