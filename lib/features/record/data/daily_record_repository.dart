@@ -3,7 +3,7 @@ import '../../../models/daily_record.dart';
 import '../../../services/hive_service.dart';
 
 class DailyRecordRepository {
-  Box get _box => HiveService.getDailyRecordBox();
+  Box<DailyRecord> get _box => HiveService.getDailyRecordBox();
 
   // 記録を作成
   Future<void> createRecord(DailyRecord record) async {
@@ -23,7 +23,6 @@ class DailyRecordRepository {
   // 特定のペットの記録を取得
   Future<List<DailyRecord>> getRecordsByPetId(String petId) async {
     return _box.values
-        .cast<DailyRecord>()
         .where((record) => record.petId == petId)
         .toList()
       ..sort((a, b) => b.date.compareTo(a.date));
@@ -33,7 +32,7 @@ class DailyRecordRepository {
   Future<DailyRecord?> getRecordByDate(String petId, DateTime date) async {
     final dateOnly = DateTime(date.year, date.month, date.day);
     
-    for (final record in _box.values.cast<DailyRecord>()) {
+    for (final record in _box.values) {
       if (record.petId == petId) {
         final recordDate = DateTime(
           record.date.year,
@@ -54,14 +53,26 @@ class DailyRecordRepository {
     DateTime startDate,
     DateTime endDate,
   ) async {
-    return _box.values
-        .cast<DailyRecord>()
-        .where((record) => 
-            record.petId == petId &&
-            record.date.isAfter(startDate.subtract(const Duration(days: 1))) &&
-            record.date.isBefore(endDate.add(const Duration(days: 1))))
-        .toList()
-      ..sort((a, b) => a.date.compareTo(b.date));
+    try {
+      // Boxが開いているかチェック
+      if (!_box.isOpen) {
+        return [];
+      }
+      
+      final allRecords = _box.values.toList();
+      
+      final filteredRecords = allRecords
+          .where((record) => 
+              record.petId == petId &&
+              record.date.isAfter(startDate.subtract(const Duration(days: 1))) &&
+              record.date.isBefore(endDate.add(const Duration(days: 1))))
+          .toList()
+        ..sort((a, b) => a.date.compareTo(b.date));
+      
+      return filteredRecords;
+    } catch (error) {
+      return [];
+    }
   }
 
   // 記録があるかチェック
@@ -73,7 +84,6 @@ class DailyRecordRepository {
   // 全ての記録を取得
   Future<List<DailyRecord>> getAllRecords() async {
     return _box.values
-        .cast<DailyRecord>()
         .toList()
       ..sort((a, b) => b.date.compareTo(a.date));
   }
