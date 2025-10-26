@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/pet/data/pet_repository.dart';
 import '../../models/pet.dart';
-import 'auth_provider.dart';
 
 final petRepositoryProvider = Provider<PetRepository>((ref) {
   return PetRepository();
