@@ -1,6 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/user.dart';
 import '../models/pet.dart';
+import '../models/daily_record.dart';
 
 class HiveService {
   static const String userBoxName = 'users';
@@ -19,6 +20,14 @@ class HiveService {
     Hive.registerAdapter(PetAdapter());
     Hive.registerAdapter(PetTypeAdapter());
     Hive.registerAdapter(GenderAdapter());
+    Hive.registerAdapter(DailyRecordAdapter());
+    Hive.registerAdapter(MealRecordAdapter());
+    Hive.registerAdapter(MedicationRecordAdapter());
+    Hive.registerAdapter(ExcretionRecordAdapter());
+    Hive.registerAdapter(HealthStatusAdapter());
+    Hive.registerAdapter(ExcretionTypeAdapter());
+    Hive.registerAdapter(StoolConditionAdapter());
+    Hive.registerAdapter(SymptomAdapter());
     
     // ボックスを開く
     await openBoxes();
