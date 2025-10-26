@@ -847,14 +847,12 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
       final notifier = ref.read(dailyRecordNotifierProvider.notifier);
 
       // 体調記録の作成
-      HealthRecord? healthRecord;
+      HealthStatus? healthStatus;
       if (_temperatureController.text.isNotEmpty ||
           _weightController.text.isNotEmpty ||
           _selectedSymptoms.isNotEmpty ||
           _healthNotesController.text.isNotEmpty) {
-        healthRecord = HealthRecord(
-          id: const Uuid().v4(),
-          time: DateTime.now(),
+        healthStatus = HealthStatus(
           temperature: double.tryParse(_temperatureController.text),
           weight: double.tryParse(_weightController.text),
           activityLevel: _activityLevel,
@@ -864,11 +862,10 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
       }
 
       // 既存の記録があるかチェック
-      final existingRecord = await notifier.getRecordByDateAndPet(
-        _selectedDate,
-        selectedPet.id,
-      );
+      final repository = ref.read(dailyRecordRepositoryProvider);
+      final existingRecord = await repository.getRecordByDate(selectedPet.id, _selectedDate);
 
+      final now = DateTime.now();
       if (existingRecord != null) {
         // 既存の記録を更新
         final updatedRecord = DailyRecord(
@@ -879,8 +876,10 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
           medications: [...existingRecord.medications, ..._medications],
           excretions: [...existingRecord.excretions, ..._excretions],
           walks: [...existingRecord.walks, ..._walks],
-          healthRecord: healthRecord ?? existingRecord.healthRecord,
+          healthStatus: healthStatus ?? existingRecord.healthStatus,
           notes: existingRecord.notes,
+          createdAt: existingRecord.createdAt,
+          updatedAt: now,
         );
         await notifier.updateRecord(updatedRecord);
       } else {
@@ -893,31 +892,37 @@ class _RecordFormScreenState extends ConsumerState<RecordFormScreen>
           medications: _medications,
           excretions: _excretions,
           walks: _walks,
-          healthRecord: healthRecord,
+          healthStatus: healthStatus,
           notes: null,
+          createdAt: now,
+          updatedAt: now,
         );
         await notifier.createRecord(newRecord);
       }
 
       // 成功時のフィードバック
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('記録を保存しました'),
-          backgroundColor: Colors.green,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('記録を保存しました'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
 
       // フォームをクリア
       _clearAllForms();
 
     } catch (error) {
       // エラー時のフィードバック
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('保存に失敗しました: $error'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('保存に失敗しました: $error'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       setState(() {
         _isSaving = false;
