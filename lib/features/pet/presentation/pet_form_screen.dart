@@ -86,12 +86,14 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('画像の選択に失敗しました: $e'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('画像の選択に失敗しました: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 
@@ -412,7 +414,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               height: 120,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.primaryLight.withOpacity(0.3),
+                color: AppColors.primaryLight.withValues(alpha: 0.3),
                 border: Border.all(
                   color: AppColors.primary,
                   width: 2,
