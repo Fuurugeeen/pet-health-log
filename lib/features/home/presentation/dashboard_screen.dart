@@ -307,9 +307,29 @@ class DashboardScreen extends ConsumerWidget {
   ) {
     return ElevatedButton(
       onPressed: () {
-        // 記録画面（タブインデックス1）に切り替え
+        // 記録画面に切り替えて、対応するタブを選択
         if (onTabChanged != null) {
-          onTabChanged!(1);
+          onTabChanged!(1); // 記録タブに移動
+          
+          // 対応するタブインデックスを決定
+          int tabIndex = 0;
+          switch (title) {
+            case '食事':
+              tabIndex = 0;
+              break;
+            case '投薬':
+              tabIndex = 1;
+              break;
+            case '排泄':
+              tabIndex = 2;
+              break;
+            case '体調':
+              tabIndex = 3;
+              break;
+          }
+          
+          // TODO: RecordFormScreenのタブを切り替える仕組みが必要
+          // 現在は記録画面に遷移するのみ
         }
       },
       style: ElevatedButton.styleFrom(
