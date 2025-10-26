@@ -8,7 +8,6 @@ import 'core/constants/app_strings.dart';
 import 'core/router/app_router.dart';
 import 'services/hive_service.dart';
 import 'services/sample_data_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +16,7 @@ void main() async {
   await HiveService.initialize();
   
   // サンプルデータを生成（デバッグ用）
-  print('サンプルデータを生成します');
+  // print('サンプルデータを生成します');
   await SampleDataService.generateInitialSampleData();
   
   runApp(

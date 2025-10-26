@@ -19,7 +19,7 @@ class SampleDataService {
       // 既存のペットがある場合はスキップ
       final existingPets = await petRepository.getAllPets();
       if (existingPets.isNotEmpty) {
-        print('既存のペットがあるため、サンプルデータの生成をスキップします');
+        // print('既存のペットがあるため、サンプルデータの生成をスキップします');
         return;
       }
       
@@ -41,12 +41,12 @@ class SampleDataService {
       );
       
       await petRepository.createPet(samplePet);
-      print('サンプルペット「${samplePet.name}」を作成しました');
+      // print('サンプルペット「${samplePet.name}」を作成しました');
       
       // デモ用の記録データを生成
       await generateDemoRecordsForPet(samplePet.id);
     } catch (error) {
-      print('サンプルデータ生成エラー: $error');
+      // print('サンプルデータ生成エラー: $error');
     }
   }
 
@@ -320,9 +320,9 @@ class SampleDataService {
         await dailyRecordRepository.createRecord(dailyRecord);
       }
       
-      print('デモ記録データを生成しました（3日分）');
+      // print('デモ記録データを生成しました（3日分）');
     } catch (error) {
-      print('デモ記録データ生成エラー: $error');
+      // print('デモ記録データ生成エラー: $error');
     }
   }
 }
