@@ -195,6 +195,15 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
         title: Text(isEditing ? AppStrings.editPet : AppStrings.addPet),
         actions: [
           TextButton(
+            onPressed: _isLoading ? null : () {
+              Navigator.of(context).pop();
+            },
+            child: const Text(
+              'キャンセル',
+              style: TextStyle(color: Colors.white70),
+            ),
+          ),
+          TextButton(
             onPressed: _isLoading ? null : _savePet,
             child: _isLoading
                 ? const SizedBox(
