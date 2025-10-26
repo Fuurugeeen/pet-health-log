@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/date_utils.dart';
-import '../../../models/pet.dart';
-import '../../../shared/providers/pet_provider.dart';
-import '../../../shared/providers/daily_record_provider.dart';
-import '../../../shared/widgets/bottom_navigation.dart';
 import '../../../models/daily_record.dart';
+import '../../../models/pet.dart';
+import '../../../shared/providers/daily_record_provider.dart';
+import '../../../shared/providers/pet_provider.dart';
+import '../../../shared/widgets/bottom_navigation.dart';
 
 class DashboardScreen extends ConsumerWidget {
   final bool showBottomNav;
   final Function(int)? onTabChanged;
-  
-  const DashboardScreen({super.key, this.showBottomNav = true, this.onTabChanged});
+
+  const DashboardScreen(
+      {super.key, this.showBottomNav = true, this.onTabChanged});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -58,7 +60,8 @@ class DashboardScreen extends ConsumerWidget {
       body: selectedPet == null
           ? _buildNoPetSelected(context)
           : _buildDashboard(context, ref, selectedPet),
-      bottomNavigationBar: showBottomNav ? const BottomNavigation(currentIndex: 0) : null,
+      bottomNavigationBar:
+          showBottomNav ? const BottomNavigation(currentIndex: 0) : null,
     );
   }
 
@@ -103,7 +106,8 @@ class DashboardScreen extends ConsumerWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
             ),
           ],
@@ -158,7 +162,6 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 16),
-
 
         // クイック記録
         Card(
@@ -263,7 +266,6 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-
   Widget _buildQuickActionButton(
     BuildContext context,
     String title,
@@ -275,27 +277,7 @@ class DashboardScreen extends ConsumerWidget {
         // 記録画面に切り替えて、対応するタブを選択
         if (onTabChanged != null) {
           onTabChanged!(1); // 記録タブに移動
-          
-          // 対応するタブインデックスを決定
-          int tabIndex = 0;
-          switch (title) {
-            case '食事':
-              tabIndex = 0;
-              break;
-            case '投薬':
-              tabIndex = 1;
-              break;
-            case '排泄':
-              tabIndex = 2;
-              break;
-            case '散歩':
-              tabIndex = 3;
-              break;
-            case '体調':
-              tabIndex = 4;
-              break;
-          }
-          
+
           // TODO: RecordFormScreenのタブを切り替える仕組みが必要
           // 現在は記録画面に遷移するのみ
         }
@@ -328,11 +310,12 @@ class DashboardScreen extends ConsumerWidget {
   Widget _buildRecentRecordsWidget(BuildContext context, WidgetRef ref, pet) {
     final now = DateTime.now();
     final sevenDaysAgo = now.subtract(const Duration(days: 7));
-    
+
     // 日付の時間部分を削除して正規化
-    final startDate = DateTime(sevenDaysAgo.year, sevenDaysAgo.month, sevenDaysAgo.day);
+    final startDate =
+        DateTime(sevenDaysAgo.year, sevenDaysAgo.month, sevenDaysAgo.day);
     final endDate = DateTime(now.year, now.month, now.day, 23, 59, 59);
-    
+
     final recordsAsync = ref.watch(recordsByDateRangeProvider((
       petId: pet.id,
       start: startDate,
@@ -350,17 +333,18 @@ class DashboardScreen extends ConsumerWidget {
 
         // 最新の記録からリスト作成
         final allItems = <Map<String, dynamic>>[];
-        
+
         for (final record in records) {
           // 食事記録
           for (final meal in record.meals) {
             allItems.add({
               'title': '食事',
-              'subtitle': '${meal.foodType} (${_getAppetiteText(meal.appetiteLevel)})',
+              'subtitle':
+                  '${meal.foodType} (${_getAppetiteText(meal.appetiteLevel)})',
               'time': meal.time,
             });
           }
-          
+
           // 散歩記録
           for (final walk in record.walks) {
             allItems.add({
@@ -369,7 +353,7 @@ class DashboardScreen extends ConsumerWidget {
               'time': walk.startTime,
             });
           }
-          
+
           // 投薬記録
           for (final medication in record.medications) {
             allItems.add({
@@ -378,7 +362,7 @@ class DashboardScreen extends ConsumerWidget {
               'time': medication.time,
             });
           }
-          
+
           // 排泄記録
           for (final excretion in record.excretions) {
             allItems.add({
@@ -390,7 +374,8 @@ class DashboardScreen extends ConsumerWidget {
         }
 
         // 時間でソートして最新3件
-        allItems.sort((a, b) => (b['time'] as DateTime).compareTo(a['time'] as DateTime));
+        allItems.sort(
+            (a, b) => (b['time'] as DateTime).compareTo(a['time'] as DateTime));
         final displayItems = allItems.take(3);
 
         if (displayItems.isEmpty) {
@@ -401,13 +386,13 @@ class DashboardScreen extends ConsumerWidget {
         }
 
         return Column(
-          children: displayItems.map((item) => 
-            _buildRecentRecord(
-              item['title']!,
-              item['subtitle']!,
-              AppDateUtils.getRelativeTime(item['time'] as DateTime),
-            )
-          ).toList(),
+          children: displayItems
+              .map((item) => _buildRecentRecord(
+                    item['title']!,
+                    item['subtitle']!,
+                    AppDateUtils.getRelativeTime(item['time'] as DateTime),
+                  ))
+              .toList(),
         );
       },
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -420,12 +405,18 @@ class DashboardScreen extends ConsumerWidget {
 
   String _getAppetiteText(int level) {
     switch (level) {
-      case 1: return '食べない';
-      case 2: return '少し';
-      case 3: return '普通';
-      case 4: return 'よく食べる';
-      case 5: return '完食';
-      default: return '普通';
+      case 1:
+        return '食べない';
+      case 2:
+        return '少し';
+      case 3:
+        return '普通';
+      case 4:
+        return 'よく食べる';
+      case 5:
+        return '完食';
+      default:
+        return '普通';
     }
   }
 
