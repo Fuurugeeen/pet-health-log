@@ -7,12 +7,23 @@ import 'core/themes/app_theme.dart';
 import 'core/constants/app_strings.dart';
 import 'core/router/app_router.dart';
 import 'services/hive_service.dart';
+import 'services/sample_data_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Hiveの初期化
   await HiveService.initialize();
+  
+  // 初回起動時にサンプルデータを生成
+  final prefs = await SharedPreferences.getInstance();
+  final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
+  
+  if (isFirstLaunch) {
+    await SampleDataService.generateInitialSampleData();
+    await prefs.setBool('isFirstLaunch', false);
+  }
   
   runApp(
     DevicePreview(
