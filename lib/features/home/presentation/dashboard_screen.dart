@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/date_utils.dart';
@@ -10,8 +9,9 @@ import '../../../shared/widgets/bottom_navigation.dart';
 
 class DashboardScreen extends ConsumerWidget {
   final bool showBottomNav;
+  final Function(int)? onTabChanged;
   
-  const DashboardScreen({super.key, this.showBottomNav = true});
+  const DashboardScreen({super.key, this.showBottomNav = true, this.onTabChanged});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -292,8 +292,10 @@ class DashboardScreen extends ConsumerWidget {
   ) {
     return ElevatedButton(
       onPressed: () {
-        // 記録画面に遷移
-        context.go('/record');
+        // 記録画面（タブインデックス1）に切り替え
+        if (onTabChanged != null) {
+          onTabChanged!(1);
+        }
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: color,

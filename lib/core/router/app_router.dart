@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/pet/presentation/pet_list_screen.dart';
+import '../../features/pet/presentation/pet_form_screen.dart';
 import '../../features/main/presentation/main_tab_screen.dart';
 import '../../shared/providers/auth_provider.dart';
+import '../../models/pet.dart';
 
 // メインタブ画面
 class HomeScreen extends StatelessWidget {
@@ -62,6 +64,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/pets',
         builder: (context, state) => const PetListScreen(),
+      ),
+      // ペット登録・編集画面
+      GoRoute(
+        path: '/pets/form',
+        builder: (context, state) {
+          final pet = state.extra as Pet?;
+          return PetFormScreen(pet: pet);
+        },
       ),
     ],
   );
