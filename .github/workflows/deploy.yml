@@ -41,7 +41,7 @@ jobs:
       run: flutter test
       
     - name: Build web
-      run: flutter build web --release --web-renderer canvaskit
+      run: flutter build web --release --web-renderer canvaskit --base-href /pet-health-log/
       
     - name: Setup Pages
       uses: actions/configure-pages@v4

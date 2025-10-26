@@ -11,7 +11,7 @@ help:
 
 build:
 	@echo "Flutter Webアプリケーションをビルド中..."
-	flutter build web --release
+	flutter build web --release --base-href /pet-health-log/
 
 run:
 	@echo "開発サーバーを起動中..."
