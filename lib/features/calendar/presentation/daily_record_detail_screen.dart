@@ -536,6 +536,7 @@ class _DailyRecordDetailScreenState extends ConsumerState<DailyRecordDetailScree
         meals: _meals,
         medications: _medications,
         excretions: _excretions,
+        walks: widget.existingRecord?.walks ?? [],
         healthStatus: healthStatus,
         notes: _notesController.text.isEmpty ? null : _notesController.text,
         createdAt: widget.existingRecord?.createdAt ?? DateTime.now(),
