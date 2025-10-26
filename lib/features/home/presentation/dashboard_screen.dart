@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../core/utils/date_utils.dart';
+import '../../../models/pet.dart';
 import '../../../shared/providers/pet_provider.dart';
 import '../../../shared/widgets/bottom_navigation.dart';
 
 class DashboardScreen extends ConsumerWidget {
-  const DashboardScreen({super.key});
+  final bool showBottomNav;
+  
+  const DashboardScreen({super.key, this.showBottomNav = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -51,7 +55,7 @@ class DashboardScreen extends ConsumerWidget {
       body: selectedPet == null
           ? _buildNoPetSelected(context)
           : _buildDashboard(context, selectedPet),
-      bottomNavigationBar: const BottomNavigation(currentIndex: 0),
+      bottomNavigationBar: showBottomNav ? const BottomNavigation(currentIndex: 0) : null,
     );
   }
 
@@ -124,7 +128,7 @@ class DashboardScreen extends ConsumerWidget {
                         ),
                       ),
                       Text(
-                        '${pet.type.displayName} • ${AppDateUtils.getAgeString(pet.birthDate)}',
+                        '${_getPetTypeDisplayName(pet.type)} • ${AppDateUtils.getAgeString(pet.birthDate)}',
                         style: const TextStyle(
                           color: AppColors.textSecondary,
                         ),
@@ -289,7 +293,7 @@ class DashboardScreen extends ConsumerWidget {
     return ElevatedButton(
       onPressed: () {
         // 記録画面に遷移
-        Navigator.of(context).pushNamed('/record');
+        context.go('/record');
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
@@ -348,5 +352,16 @@ class DashboardScreen extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  String _getPetTypeDisplayName(PetType type) {
+    switch (type) {
+      case PetType.dog:
+        return '犬';
+      case PetType.cat:
+        return '猫';
+      case PetType.other:
+        return 'その他';
+    }
   }
 }
