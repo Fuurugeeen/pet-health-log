@@ -7,6 +7,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../../models/pet.dart';
 import '../../../shared/providers/pet_provider.dart';
+import '../../../shared/widgets/pet_selector_dropdown.dart';
 
 enum ReportPeriod {
   week('1週間'),
@@ -44,7 +45,6 @@ class _ReportScreenState extends ConsumerState<ReportScreen>
   @override
   Widget build(BuildContext context) {
     final selectedPet = ref.watch(selectedPetProvider);
-    final petsAsync = ref.watch(petsProvider);
 
     if (selectedPet == null) {
       return _buildNoPetSelected();
@@ -53,36 +53,9 @@ class _ReportScreenState extends ConsumerState<ReportScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.report),
-        actions: [
-          // ペット切り替えドロップダウン
-          DropdownButton<String>(
-            value: selectedPet.id,
-            underline: Container(),
-            icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
-            dropdownColor: AppColors.primary,
-            onChanged: (petId) {
-              if (petId != null) {
-                petsAsync.whenData((pets) {
-                  final pet = pets.firstWhere((p) => p.id == petId);
-                  ref.read(selectedPetProvider.notifier).state = pet;
-                });
-              }
-            },
-            items: petsAsync.when(
-              data: (pets) => pets.map((pet) {
-                return DropdownMenuItem(
-                  value: pet.id,
-                  child: Text(
-                    pet.name,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                );
-              }).toList(),
-              loading: () => [],
-              error: (_, __) => [],
-            ),
-          ),
-          const SizedBox(width: 16),
+        actions: const [
+          PetSelectorDropdown(),
+          SizedBox(width: 16),
         ],
       ),
       body: Column(

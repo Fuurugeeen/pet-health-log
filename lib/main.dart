@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:device_preview/device_preview.dart';
@@ -11,17 +12,16 @@ import 'services/sample_data_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Hiveの初期化
   await HiveService.initialize();
-  
+
   // サンプルデータを生成（デバッグ用）
-  // print('サンプルデータを生成します');
   await SampleDataService.generateInitialSampleData();
-  
+
   runApp(
     DevicePreview(
-      enabled: true, // 常に有効化（リリースビルドでも使用）
+      enabled: kDebugMode, // デバッグモードでのみ有効化
       builder: (context) => const ProviderScope(
         child: MyApp(),
       ),

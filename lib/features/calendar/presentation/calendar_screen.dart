@@ -9,6 +9,7 @@ import '../../../models/daily_record.dart';
 import '../../../models/pet.dart';
 import '../../../shared/providers/daily_record_provider.dart';
 import '../../../shared/providers/pet_provider.dart';
+import '../../../shared/widgets/pet_selector_dropdown.dart';
 import 'daily_record_detail_screen.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
@@ -32,7 +33,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final selectedPet = ref.watch(selectedPetProvider);
-    final petsAsync = ref.watch(petsProvider);
 
     if (selectedPet == null) {
       return _buildNoPetSelected();
@@ -41,35 +41,9 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.calendar),
-        actions: [
-          DropdownButton<String>(
-            value: selectedPet.id,
-            underline: Container(),
-            icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
-            dropdownColor: AppColors.primary,
-            onChanged: (petId) {
-              if (petId != null) {
-                petsAsync.whenData((pets) {
-                  final pet = pets.firstWhere((p) => p.id == petId);
-                  ref.read(selectedPetProvider.notifier).state = pet;
-                });
-              }
-            },
-            items: petsAsync.when(
-              data: (pets) => pets.map((pet) {
-                return DropdownMenuItem(
-                  value: pet.id,
-                  child: Text(
-                    pet.name,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                );
-              }).toList(),
-              loading: () => [],
-              error: (_, __) => [],
-            ),
-          ),
-          const SizedBox(width: 16),
+        actions: const [
+          PetSelectorDropdown(),
+          SizedBox(width: 16),
         ],
       ),
       body: Column(
