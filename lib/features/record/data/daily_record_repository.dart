@@ -53,26 +53,22 @@ class DailyRecordRepository {
     DateTime startDate,
     DateTime endDate,
   ) async {
-    try {
-      // Boxが開いているかチェック
-      if (!_box.isOpen) {
-        return [];
-      }
-      
-      final allRecords = _box.values.toList();
-      
-      final filteredRecords = allRecords
-          .where((record) => 
-              record.petId == petId &&
-              record.date.isAfter(startDate.subtract(const Duration(days: 1))) &&
-              record.date.isBefore(endDate.add(const Duration(days: 1))))
-          .toList()
-        ..sort((a, b) => a.date.compareTo(b.date));
-      
-      return filteredRecords;
-    } catch (error) {
-      return [];
+    // Boxが開いているかチェック
+    if (!_box.isOpen) {
+      throw StateError('DailyRecord box is not open');
     }
+
+    final allRecords = _box.values.toList();
+
+    final filteredRecords = allRecords
+        .where((record) =>
+            record.petId == petId &&
+            record.date.isAfter(startDate.subtract(const Duration(days: 1))) &&
+            record.date.isBefore(endDate.add(const Duration(days: 1))))
+        .toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+
+    return filteredRecords;
   }
 
   // 記録があるかチェック

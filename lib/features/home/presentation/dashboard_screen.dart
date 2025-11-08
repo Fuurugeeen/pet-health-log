@@ -10,6 +10,7 @@ import '../../../models/pet.dart';
 import '../../../shared/providers/daily_record_provider.dart';
 import '../../../shared/providers/pet_provider.dart';
 import '../../../shared/widgets/bottom_navigation.dart';
+import '../../../shared/widgets/pet_selector_dropdown.dart';
 
 class DashboardScreen extends ConsumerWidget {
   final bool showBottomNav;
@@ -21,40 +22,12 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedPet = ref.watch(selectedPetProvider);
-    final petsAsync = ref.watch(petsProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.home),
-        actions: [
-          if (selectedPet != null)
-            DropdownButton<String>(
-              value: selectedPet.id,
-              underline: Container(),
-              icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white),
-              dropdownColor: AppColors.primary,
-              onChanged: (petId) {
-                if (petId != null) {
-                  petsAsync.whenData((pets) {
-                    final pet = pets.firstWhere((p) => p.id == petId);
-                    ref.read(selectedPetProvider.notifier).state = pet;
-                  });
-                }
-              },
-              items: petsAsync.when(
-                data: (pets) => pets.map((pet) {
-                  return DropdownMenuItem(
-                    value: pet.id,
-                    child: Text(
-                      pet.name,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  );
-                }).toList(),
-                loading: () => [],
-                error: (_, __) => [],
-              ),
-            ),
+        actions: const [
+          PetSelectorDropdown(),
         ],
       ),
       body: selectedPet == null
